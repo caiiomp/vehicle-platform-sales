@@ -4,6 +4,7 @@ import "time"
 
 type Vehicle struct {
 	ID        string
+	VehicleID string
 	Brand     string
 	Model     string
 	Year      int

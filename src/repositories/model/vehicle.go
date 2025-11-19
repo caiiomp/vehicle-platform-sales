@@ -8,6 +8,7 @@ import (
 
 type Vehicle struct {
 	ID        string     `json:"id,omitempty" bson:"_id,omitempty"`
+	VehicleID string     `json:"vehicle_id,omitempty" bson:"vehicle_id,omitempty"`
 	Brand     string     `json:"brand,omitempty" bson:"brand,omitempty"`
 	Model     string     `json:"model,omitempty" bson:"model,omitempty"`
 	Year      int        `json:"year,omitempty" bson:"year,omitempty"`
@@ -21,13 +22,14 @@ type Vehicle struct {
 
 func VehicleFromDomain(vehicle entity.Vehicle) Vehicle {
 	return Vehicle{
-		ID:     vehicle.ID,
-		Brand:  vehicle.Brand,
-		Model:  vehicle.Model,
-		Year:   vehicle.Year,
-		Color:  vehicle.Color,
-		Price:  vehicle.Price,
-		SoldAt: vehicle.SoldAt,
+		ID:        vehicle.ID,
+		VehicleID: vehicle.VehicleID,
+		Brand:     vehicle.Brand,
+		Model:     vehicle.Model,
+		Year:      vehicle.Year,
+		Color:     vehicle.Color,
+		Price:     vehicle.Price,
+		SoldAt:    vehicle.SoldAt,
 	}
 }
 

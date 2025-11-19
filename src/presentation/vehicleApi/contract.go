@@ -5,20 +5,22 @@ import (
 )
 
 type createVehicleRequest struct {
-	Brand string  `json:"brand" binding:"required"`
-	Model string  `json:"model" binding:"required"`
-	Year  int     `json:"year" binding:"required"`
-	Color string  `json:"color" binding:"required"`
-	Price float64 `json:"price" binding:"required"`
+	VehicleID string  `json:"vehicle_id" binding:"required"`
+	Brand     string  `json:"brand" binding:"required"`
+	Model     string  `json:"model" binding:"required"`
+	Year      int     `json:"year" binding:"required"`
+	Color     string  `json:"color" binding:"required"`
+	Price     float64 `json:"price" binding:"required"`
 }
 
 func (ref createVehicleRequest) ToDomain() *entity.Vehicle {
 	return &entity.Vehicle{
-		Brand: ref.Brand,
-		Model: ref.Model,
-		Year:  ref.Year,
-		Color: ref.Color,
-		Price: ref.Price,
+		VehicleID: ref.VehicleID,
+		Brand:     ref.Brand,
+		Model:     ref.Model,
+		Year:      ref.Year,
+		Color:     ref.Color,
+		Price:     ref.Price,
 	}
 }
 
