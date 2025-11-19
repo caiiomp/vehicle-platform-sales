@@ -1,0 +1,246 @@
+definitions:
+  responses.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  responses.Sale:
+    properties:
+      document_number:
+        type: string
+      id:
+        type: string
+      price:
+        type: number
+      sold_at:
+        type: string
+      vehicle_id:
+        type: string
+    type: object
+  responses.Vehicle:
+    properties:
+      brand:
+        type: string
+      color:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      model:
+        type: string
+      price:
+        type: number
+      sold_at:
+        type: string
+      updated_at:
+        type: string
+      year:
+        type: integer
+    type: object
+  vehicleApi.createVehicleRequest:
+    properties:
+      brand:
+        type: string
+      color:
+        type: string
+      model:
+        type: string
+      price:
+        type: number
+      year:
+        type: integer
+    required:
+    - brand
+    - color
+    - model
+    - price
+    - year
+    type: object
+  vehicleApi.updateVehicleRequest:
+    properties:
+      brand:
+        type: string
+      color:
+        type: string
+      model:
+        type: string
+      price:
+        type: number
+      year:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /sales:
+    get:
+      consumes:
+      - application/json
+      description: List sales
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.Sale'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      summary: List sales
+      tags:
+      - Sale
+  /vehicles:
+    get:
+      consumes:
+      - application/json
+      description: Seach vehicles
+      parameters:
+      - description: Filter vehicles by sold status
+        in: query
+        name: is_sold
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.Vehicle'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      summary: Search vehicles
+      tags:
+      - Vehicle
+    post:
+      consumes:
+      - application/json
+      description: Create a vehicle
+      parameters:
+      - description: Body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/vehicleApi.createVehicleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/responses.Vehicle'
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      summary: Create Vehicle
+      tags:
+      - Vehicle
+  /vehicles/{vehicle_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a vehicle
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.Vehicle'
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      summary: Get Vehicle
+      tags:
+      - Vehicle
+    patch:
+      consumes:
+      - application/json
+      description: Update a vehicle
+      parameters:
+      - description: Body
+        in: body
+        name: user
+        schema:
+          $ref: '#/definitions/vehicleApi.updateVehicleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.Vehicle'
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      summary: Update Vehicle
+      tags:
+      - Vehicle
+  /vehicles/{vehicle_id}/buy:
+    post:
+      consumes:
+      - application/json
+      description: Buy a vehicle
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.Vehicle'
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      summary: Buy Vehicle
+      tags:
+      - Vehicle
+swagger: "2.0"
