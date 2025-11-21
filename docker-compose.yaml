@@ -10,6 +10,29 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: docker
     volumes:
       - mongo_data:/data/db
+    networks:
+      - shared_network
+
+  vehicle-platform-sales:
+    build: .
+    container_name: api-vehicle-platform-sales
+    restart: always
+    depends_on:
+      - mongo
+    ports:
+      - "4002:4002"
+    environment:
+      API_PORT: "4002"
+      MONGO_URI: "mongodb://docker:docker@mongo:27017"
+      MONGO_DATABASE: "vehicle-platform-sales"
+      VEHICLE_PLATFORM_PAYMENTS_HOST: "http://vehicle-platform-payments:4003"
+      VEHICLE_PLATFORM_SALES_HOST: "http://vehicle-platform-sales:4002"
+    networks:
+      - shared_network
 
 volumes:
   mongo_data:
+
+networks:
+  shared_network:
+    external: true

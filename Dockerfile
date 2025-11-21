@@ -17,6 +17,4 @@ WORKDIR /app
 
 COPY --from=builder /app/vehicle-platform-sales .
 
-EXPOSE 8080
-
 CMD ["./vehicle-platform-sales"]
