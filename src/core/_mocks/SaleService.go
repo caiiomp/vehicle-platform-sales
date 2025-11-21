@@ -75,6 +75,36 @@ func (_m *SaleService) Search(ctx context.Context) ([]entity.Sale, error) {
 	return r0, r1
 }
 
+// UpdateStatusByPaymentID provides a mock function with given fields: ctx, paymentID, status
+func (_m *SaleService) UpdateStatusByPaymentID(ctx context.Context, paymentID string, status string) (*entity.Sale, error) {
+	ret := _m.Called(ctx, paymentID, status)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateStatusByPaymentID")
+	}
+
+	var r0 *entity.Sale
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*entity.Sale, error)); ok {
+		return rf(ctx, paymentID, status)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *entity.Sale); ok {
+		r0 = rf(ctx, paymentID, status)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*entity.Sale)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, paymentID, status)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // NewSaleService creates a new instance of SaleService. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewSaleService(t interface {

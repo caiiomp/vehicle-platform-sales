@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
@@ -12,6 +13,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
+	vehicleplatformpayments "github.com/caiiomp/vehicle-platform-sales/src/adapter/vehiclePlatformPayments"
+	vehiclePlatformPaymentsHttpClient "github.com/caiiomp/vehicle-platform-sales/src/adapter/vehiclePlatformPayments/http"
 	"github.com/caiiomp/vehicle-platform-sales/src/core/useCases/sale"
 	"github.com/caiiomp/vehicle-platform-sales/src/core/useCases/vehicle"
 	_ "github.com/caiiomp/vehicle-platform-sales/src/docs"
@@ -26,6 +29,9 @@ func main() {
 	var (
 		mongoURI      = os.Getenv("MONGO_URI")
 		mongoDatabase = os.Getenv("MONGO_DATABASE")
+
+		vehiclePlatformPaymentsHost = os.Getenv("VEHICLE_PLATFORM_PAYMENTS_HOST")
+		vehiclePlatformSalesHost    = os.Getenv("VEHICLE_PLATFORM_SALES_HOST")
 	)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -42,6 +48,15 @@ func main() {
 		log.Fatalf("could not connect to database: %v", err)
 	}
 
+	// HTTP Clients
+	httpClient := &http.Client{
+		Timeout: time.Second * 3,
+	}
+	vehiclePlatformPaymentsHttpClient := vehiclePlatformPaymentsHttpClient.NewVehiclePlatformSalesHttpClient(httpClient, vehiclePlatformPaymentsHost, vehiclePlatformSalesHost)
+
+	// Adapters
+	vehiclePlatformPaymentsAdapter := vehicleplatformpayments.NewVehiclePlatformPaymentsAdapter(vehiclePlatformPaymentsHttpClient)
+
 	// Collections
 	vehiclesCollection := mongoClient.Database(mongoDatabase).Collection("vehicles")
 	salesCollection := mongoClient.Database(mongoDatabase).Collection("sales")
@@ -51,8 +66,8 @@ func main() {
 	saleRepository := saleRepository.NewSaleRepository(salesCollection)
 
 	// Services
-	vehicleService := vehicle.NewVehicleService(vehicleRepository, saleRepository)
-	saleService := sale.NewSaleService(saleRepository)
+	vehicleService := vehicle.NewVehicleService(vehicleRepository, saleRepository, vehiclePlatformPaymentsAdapter)
+	saleService := sale.NewSaleService(saleRepository, timeGenerator)
 
 	app := presentation.SetupServer()
 
@@ -64,4 +79,8 @@ func main() {
 	if err = app.Run(":4002"); err != nil {
 		log.Fatalf("coult not initialize http server: %v", err)
 	}
+}
+
+func timeGenerator() time.Time {
+	return time.Now()
 }

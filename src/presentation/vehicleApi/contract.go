@@ -49,3 +49,7 @@ func (ref updateVehicleRequest) ToDomain() *entity.Vehicle {
 type vehicleQuery struct {
 	IsSold *bool `form:"is_sold"`
 }
+
+type buyVehicleRequest struct {
+	BuyerDocumentNumber string `json:"buyer_document_number" binding:"required"`
+}

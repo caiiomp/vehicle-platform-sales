@@ -2,6 +2,7 @@ package saleRepository
 
 import (
 	"context"
+	"time"
 
 	interfaces "github.com/caiiomp/vehicle-platform-sales/src/core/_interfaces"
 	"github.com/caiiomp/vehicle-platform-sales/src/core/domain/entity"
@@ -59,4 +60,51 @@ func (ref *saleRepository) Search(ctx context.Context) ([]entity.Sale, error) {
 	}
 
 	return sales, nil
+}
+
+func (ref *saleRepository) GetByVehicleID(ctx context.Context, vehicleID string) (*entity.Sale, error) {
+	result := ref.collection.FindOne(ctx, bson.M{"vehicle_id": vehicleID})
+	if err := result.Err(); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	var record model.Sale
+	if err := result.Decode(&record); err != nil {
+		return nil, err
+	}
+
+	return record.ToDomain(), nil
+}
+
+func (ref *saleRepository) UpdateStatusByPaymentID(ctx context.Context, paymentID string, status string, soldDate *time.Time) (*entity.Sale, error) {
+	update := bson.M{
+		"$set": bson.M{
+			"status":     status,
+			"sold_at":    soldDate,
+			"updated_at": time.Now(),
+		},
+	}
+
+	_, err := ref.collection.UpdateOne(ctx, bson.M{"payment_id": paymentID}, update)
+	if err != nil {
+		return nil, err
+	}
+
+	result := ref.collection.FindOne(ctx, bson.M{"payment_id": paymentID})
+	if err = result.Err(); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	var recordToReturn model.Sale
+	if err = result.Decode(&recordToReturn); err != nil {
+		return nil, err
+	}
+
+	return recordToReturn.ToDomain(), nil
 }

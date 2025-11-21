@@ -53,14 +53,9 @@ func (ref *vehicleRepository) Create(ctx context.Context, vehicle entity.Vehicle
 	return recordToReturn.ToDomain(), nil
 }
 
-func (ref *vehicleRepository) GetByID(ctx context.Context, id string) (*entity.Vehicle, error) {
-	objectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return nil, err
-	}
-
-	result := ref.collection.FindOne(ctx, bson.M{"_id": objectID})
-	if err = result.Err(); err != nil {
+func (ref *vehicleRepository) GetByID(ctx context.Context, vehicleID string) (*entity.Vehicle, error) {
+	result := ref.collection.FindOne(ctx, bson.M{"vehicle_id": vehicleID})
+	if err := result.Err(); err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, nil
 		}
@@ -68,7 +63,7 @@ func (ref *vehicleRepository) GetByID(ctx context.Context, id string) (*entity.V
 	}
 
 	var record model.Vehicle
-	if err = result.Decode(&record); err != nil {
+	if err := result.Decode(&record); err != nil {
 		return nil, err
 	}
 
@@ -114,25 +109,20 @@ func (ref *vehicleRepository) Search(ctx context.Context, isSold *bool) ([]entit
 	return records, nil
 }
 
-func (ref *vehicleRepository) Update(ctx context.Context, id string, vehicle entity.Vehicle) (*entity.Vehicle, error) {
+func (ref *vehicleRepository) Update(ctx context.Context, vehicleID string, vehicle entity.Vehicle) (*entity.Vehicle, error) {
 	record := model.VehicleFromDomain(vehicle)
 	record.UpdatedAt = time.Now()
-
-	objectID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return nil, err
-	}
 
 	update := bson.M{
 		"$set": record,
 	}
 
-	_, err = ref.collection.UpdateOne(ctx, bson.M{"_id": objectID}, update)
+	_, err := ref.collection.UpdateOne(ctx, bson.M{"vehicle_id": vehicleID}, update)
 	if err != nil {
 		return nil, err
 	}
 
-	result := ref.collection.FindOne(ctx, bson.M{"_id": objectID})
+	result := ref.collection.FindOne(ctx, bson.M{"vehicle_id": vehicleID})
 	if err = result.Err(); err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, nil

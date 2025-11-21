@@ -21,7 +21,6 @@ func TestVehicleFromDomain(t *testing.T) {
 		Year:      2025,
 		Color:     "Gray",
 		Price:     80000,
-		SoldAt:    &now,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
@@ -33,7 +32,6 @@ func TestVehicleFromDomain(t *testing.T) {
 		Year:      2025,
 		Color:     "Gray",
 		Price:     80000,
-		SoldAt:    &now,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
