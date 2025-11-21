@@ -27,6 +27,8 @@ import (
 
 func main() {
 	var (
+		apiPort = os.Getenv("API_PORT")
+
 		mongoURI      = os.Getenv("MONGO_URI")
 		mongoDatabase = os.Getenv("MONGO_DATABASE")
 
@@ -76,7 +78,11 @@ func main() {
 	vehicleApi.RegisterVehicleRoutes(app, vehicleService)
 	saleApi.RegisterSaleRoutes(app, saleService)
 
-	if err = app.Run(":4002"); err != nil {
+	if apiPort == "" {
+		apiPort = "8080"
+	}
+
+	if err = app.Run(":" + apiPort); err != nil {
 		log.Fatalf("coult not initialize http server: %v", err)
 	}
 }

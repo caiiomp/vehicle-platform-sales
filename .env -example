@@ -1,3 +1,12 @@
+# API
+API_PORT=""
+
 # Database
 MONGO_URI=""
 MONGO_DATABASE=""
+
+# Vehicle Platform Payments
+VEHICLE_PLATFORM_PAYMENTS_HOST=""
+
+# Vehicle Platform Sales
+VEHICLE_PLATFORM_SALES_HOST=""
