@@ -6,13 +6,17 @@ definitions:
     type: object
   responses.Sale:
     properties:
-      document_number:
+      buyer_document_number:
         type: string
       id:
+        type: string
+      payment_id:
         type: string
       price:
         type: number
       sold_at:
+        type: string
+      status:
         type: string
       vehicle_id:
         type: string
@@ -31,12 +35,26 @@ definitions:
         type: string
       price:
         type: number
-      sold_at:
-        type: string
       updated_at:
+        type: string
+      vehicle_id:
         type: string
       year:
         type: integer
+    type: object
+  saleApi.saleWebhookRequest:
+    properties:
+      payment_id:
+        type: string
+      status:
+        type: string
+    type: object
+  vehicleApi.buyVehicleRequest:
+    properties:
+      buyer_document_number:
+        type: string
+    required:
+    - buyer_document_number
     type: object
   vehicleApi.createVehicleRequest:
     properties:
@@ -48,6 +66,8 @@ definitions:
         type: string
       price:
         type: number
+      vehicle_id:
+        type: string
       year:
         type: integer
     required:
@@ -55,6 +75,7 @@ definitions:
     - color
     - model
     - price
+    - vehicle_id
     - year
     type: object
   vehicleApi.updateVehicleRequest:
@@ -92,6 +113,34 @@ paths:
           schema:
             $ref: '#/definitions/responses.ErrorResponse'
       summary: List sales
+      tags:
+      - Sale
+  /sales/webhook:
+    post:
+      consumes:
+      - application/json
+      description: Sale Webhook
+      parameters:
+      - description: Body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/saleApi.saleWebhookRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      summary: Sale Webhook
       tags:
       - Sale
   /vehicles:
@@ -221,6 +270,13 @@ paths:
       consumes:
       - application/json
       description: Buy a vehicle
+      parameters:
+      - description: Body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/vehicleApi.buyVehicleRequest'
       produces:
       - application/json
       responses:

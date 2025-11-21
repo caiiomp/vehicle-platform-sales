@@ -188,6 +188,7 @@ func (ref *vehicleApi) update(ctx *gin.Context) {
 // @Tags Vehicle
 // @Accept json
 // @Produce json
+// @Param user body vehicleApi.buyVehicleRequest true "Body"
 // @Success 200 {object} responses.Vehicle
 // @Failure 204 {object} responses.ErrorResponse
 // @Failure 400 {object} responses.ErrorResponse
