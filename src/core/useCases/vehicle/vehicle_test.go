@@ -8,6 +8,7 @@ import (
 
 	mocks "github.com/caiiomp/vehicle-platform-sales/src/core/_mocks"
 	"github.com/caiiomp/vehicle-platform-sales/src/core/domain/entity"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -30,7 +31,7 @@ func TestCreate(t *testing.T) {
 		vehicleRepositoryMocked.On("Create", ctx, vehicle).
 			Return(&vehicle, nil)
 
-		service := NewVehicleService(vehicleRepositoryMocked, nil)
+		service := NewVehicleService(vehicleRepositoryMocked, nil, nil)
 
 		actual, err := service.Create(ctx, vehicle)
 
@@ -50,7 +51,7 @@ func TestGetByID(t *testing.T) {
 		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
 			Return(nil, unexpectedError)
 
-		service := NewVehicleService(vehicleRepositoryMocked, nil)
+		service := NewVehicleService(vehicleRepositoryMocked, nil, nil)
 
 		actual, err := service.GetByID(ctx, vehicleID)
 
@@ -77,7 +78,7 @@ func TestGetByID(t *testing.T) {
 		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
 			Return(vehicle, nil)
 
-		service := NewVehicleService(vehicleRepositoryMocked, nil)
+		service := NewVehicleService(vehicleRepositoryMocked, nil, nil)
 
 		actual, err := service.GetByID(ctx, vehicleID)
 
@@ -98,7 +99,7 @@ func TestSearch(t *testing.T) {
 		vehicleRepositoryMocked.On("Search", ctx, &isSold).
 			Return(nil, unexpectedError)
 
-		service := NewVehicleService(vehicleRepositoryMocked, nil)
+		service := NewVehicleService(vehicleRepositoryMocked, nil, nil)
 
 		actual, err := service.Search(ctx, &isSold)
 
@@ -114,7 +115,7 @@ func TestSearch(t *testing.T) {
 		vehicleRepositoryMocked.On("Search", ctx, &isSold).
 			Return([]entity.Vehicle{}, nil)
 
-		service := NewVehicleService(vehicleRepositoryMocked, nil)
+		service := NewVehicleService(vehicleRepositoryMocked, nil, nil)
 
 		actual, err := service.Search(ctx, &isSold)
 
@@ -134,7 +135,7 @@ func TestUpdate(t *testing.T) {
 		vehicleRepositoryMocked.On("Update", ctx, vehicleID, entity.Vehicle{}).
 			Return(nil, unexpectedError)
 
-		service := NewVehicleService(vehicleRepositoryMocked, nil)
+		service := NewVehicleService(vehicleRepositoryMocked, nil, nil)
 
 		actual, err := service.Update(ctx, vehicleID, entity.Vehicle{})
 
@@ -148,7 +149,7 @@ func TestUpdate(t *testing.T) {
 		vehicleRepositoryMocked.On("Update", ctx, vehicleID, entity.Vehicle{}).
 			Return(&entity.Vehicle{}, nil)
 
-		service := NewVehicleService(vehicleRepositoryMocked, nil)
+		service := NewVehicleService(vehicleRepositoryMocked, nil, nil)
 
 		actual, err := service.Update(ctx, vehicleID, entity.Vehicle{})
 
@@ -159,105 +160,195 @@ func TestUpdate(t *testing.T) {
 
 func TestBuy(t *testing.T) {
 	ctx := context.TODO()
-	vehicleID := primitive.NewObjectID().Hex()
-	userID := primitive.NewObjectID().Hex()
+	vehicleID := uuid.NewString()
+	saleID := uuid.NewString()
+	paymentID := uuid.NewString()
+	buyerDocumentNumber := uuid.NewString()
 	unexpectedError := errors.New("unexpected error")
 
 	t.Run("should not buy vehicle when failed to get vehicle by id", func(t *testing.T) {
 		vehicleRepositoryMocked := mocks.NewVehicleRepository(t)
 		saleRepositoryMocked := mocks.NewSaleRepository(t)
+		vehiclePlatformPaymentsAdapterMocked := mocks.NewVehiclePlatformPaymentsAdapter(t)
 
 		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
 			Return(nil, unexpectedError)
 
-		service := NewVehicleService(vehicleRepositoryMocked, nil)
+		service := NewVehicleService(vehicleRepositoryMocked, nil, nil)
 
-		actual, err := service.Buy(ctx, vehicleID, userID)
+		actual, err := service.Buy(ctx, vehicleID, buyerDocumentNumber)
 
 		assert.Nil(t, actual)
 		assert.Equal(t, unexpectedError, err)
-		vehicleRepositoryMocked.AssertNumberOfCalls(t, "Update", 0)
 		saleRepositoryMocked.AssertNumberOfCalls(t, "Create", 0)
+		vehiclePlatformPaymentsAdapterMocked.AssertNumberOfCalls(t, "GeneratePayment", 0)
 	})
 
 	t.Run("should not buy vehicle when vehicle does not exist", func(t *testing.T) {
 		vehicleRepositoryMocked := mocks.NewVehicleRepository(t)
 		saleRepositoryMocked := mocks.NewSaleRepository(t)
+		vehiclePlatformPaymentsAdapterMocked := mocks.NewVehiclePlatformPaymentsAdapter(t)
 
 		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
 			Return(nil, nil)
 
-		service := NewVehicleService(vehicleRepositoryMocked, nil)
+		service := NewVehicleService(vehicleRepositoryMocked, nil, nil)
 
-		actual, err := service.Buy(ctx, vehicleID, userID)
+		actual, err := service.Buy(ctx, vehicleID, buyerDocumentNumber)
 
 		assert.Nil(t, actual)
 		assert.ErrorContains(t, err, "vehicle does not exist")
-		vehicleRepositoryMocked.AssertNumberOfCalls(t, "Update", 0)
 		saleRepositoryMocked.AssertNumberOfCalls(t, "Create", 0)
+		vehiclePlatformPaymentsAdapterMocked.AssertNumberOfCalls(t, "GeneratePayment", 0)
+	})
+
+	t.Run("should not buy vehicle when failed to check sales for this vehicle", func(t *testing.T) {
+		vehicleRepositoryMocked := mocks.NewVehicleRepository(t)
+		saleRepositoryMocked := mocks.NewSaleRepository(t)
+		vehiclePlatformPaymentsAdapterMocked := mocks.NewVehiclePlatformPaymentsAdapter(t)
+
+		vehicle := &entity.Vehicle{
+			ID:        vehicleID,
+			VehicleID: vehicleID,
+			Brand:     "Some Brand",
+			Model:     "Some Model",
+			Year:      2000,
+			Color:     "Black",
+			Price:     20000,
+		}
+
+		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
+			Return(vehicle, nil)
+
+		saleRepositoryMocked.On("GetByVehicleID", ctx, vehicleID).
+			Return(nil, unexpectedError)
+
+		service := NewVehicleService(vehicleRepositoryMocked, saleRepositoryMocked, nil)
+
+		actual, err := service.Buy(ctx, vehicleID, buyerDocumentNumber)
+
+		assert.Nil(t, actual)
+		assert.Equal(t, unexpectedError, err)
+		saleRepositoryMocked.AssertNumberOfCalls(t, "Create", 0)
+		vehiclePlatformPaymentsAdapterMocked.AssertNumberOfCalls(t, "GeneratePayment", 0)
 	})
 
 	t.Run("should not buy vehicle when vehicle already sold", func(t *testing.T) {
 		vehicleRepositoryMocked := mocks.NewVehicleRepository(t)
 		saleRepositoryMocked := mocks.NewSaleRepository(t)
+		vehiclePlatformPaymentsAdapterMocked := mocks.NewVehiclePlatformPaymentsAdapter(t)
 
-		now := time.Now()
+		vehicle := &entity.Vehicle{
+			ID:        vehicleID,
+			VehicleID: vehicleID,
+			Brand:     "Some Brand",
+			Model:     "Some Model",
+			Year:      2000,
+			Color:     "Black",
+			Price:     20000,
+		}
 
-		vehicleAlreadySold := &entity.Vehicle{
-			SoldAt: &now,
+		sale := &entity.Sale{
+			ID:                  saleID,
+			VehicleID:           vehicleID,
+			PaymentID:           paymentID,
+			BuyerDocumentNumber: buyerDocumentNumber,
+			Price:               10000,
+			Status:              "APPROVED",
 		}
 
 		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
-			Return(vehicleAlreadySold, nil)
+			Return(vehicle, nil)
 
-		service := NewVehicleService(vehicleRepositoryMocked, nil)
+		saleRepositoryMocked.On("GetByVehicleID", ctx, vehicleID).
+			Return(sale, nil)
 
-		actual, err := service.Buy(ctx, vehicleID, userID)
+		service := NewVehicleService(vehicleRepositoryMocked, saleRepositoryMocked, nil)
+
+		actual, err := service.Buy(ctx, vehicleID, buyerDocumentNumber)
 
 		assert.Nil(t, actual)
 		assert.ErrorContains(t, err, "vehicle already sold")
-		vehicleRepositoryMocked.AssertNumberOfCalls(t, "Update", 0)
+		saleRepositoryMocked.AssertNumberOfCalls(t, "Create", 0)
+		vehiclePlatformPaymentsAdapterMocked.AssertNumberOfCalls(t, "GeneratePayment", 0)
+	})
+
+	t.Run("should not buy vehicle when failed to generate payment", func(t *testing.T) {
+		vehicleRepositoryMocked := mocks.NewVehicleRepository(t)
+		saleRepositoryMocked := mocks.NewSaleRepository(t)
+		vehiclePlatformPaymentsAdapterMocked := mocks.NewVehiclePlatformPaymentsAdapter(t)
+
+		vehicle := &entity.Vehicle{
+			Price: 10000,
+		}
+
+		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
+			Return(vehicle, nil)
+
+		saleRepositoryMocked.On("GetByVehicleID", ctx, vehicleID).
+			Return(nil, nil)
+
+		vehiclePlatformPaymentsAdapterMocked.On("GeneratePayment", ctx, vehicle.Price, "APPROVED").
+			Return("", unexpectedError)
+
+		service := NewVehicleService(vehicleRepositoryMocked, saleRepositoryMocked, vehiclePlatformPaymentsAdapterMocked)
+
+		actual, err := service.Buy(ctx, vehicleID, buyerDocumentNumber)
+
+		assert.Nil(t, actual)
+		assert.Equal(t, unexpectedError, err)
 		saleRepositoryMocked.AssertNumberOfCalls(t, "Create", 0)
 	})
 
 	t.Run("should not buy vehicle when failed to create sale", func(t *testing.T) {
 		vehicleRepositoryMocked := mocks.NewVehicleRepository(t)
 		saleRepositoryMocked := mocks.NewSaleRepository(t)
+		vehiclePlatformPaymentsAdapterMocked := mocks.NewVehiclePlatformPaymentsAdapter(t)
 
 		vehicle := &entity.Vehicle{}
 
 		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
 			Return(vehicle, nil)
 
+		saleRepositoryMocked.On("GetByVehicleID", ctx, vehicleID).
+			Return(nil, nil)
+
+		vehiclePlatformPaymentsAdapterMocked.On("GeneratePayment", ctx, vehicle.Price, "APPROVED").
+			Return(paymentID, nil)
+
 		saleRepositoryMocked.On("Create", ctx, mock.AnythingOfType("entity.Sale")).
 			Return(nil, unexpectedError)
 
-		service := NewVehicleService(vehicleRepositoryMocked, saleRepositoryMocked)
+		service := NewVehicleService(vehicleRepositoryMocked, saleRepositoryMocked, vehiclePlatformPaymentsAdapterMocked)
 
-		actual, err := service.Buy(ctx, vehicleID, userID)
+		actual, err := service.Buy(ctx, vehicleID, buyerDocumentNumber)
 
 		assert.Nil(t, actual)
 		assert.Equal(t, unexpectedError, err)
-		vehicleRepositoryMocked.AssertNumberOfCalls(t, "Update", 0)
 	})
 
 	t.Run("should buy vehicle successfully", func(t *testing.T) {
 		vehicleRepositoryMocked := mocks.NewVehicleRepository(t)
 		saleRepositoryMocked := mocks.NewSaleRepository(t)
+		vehiclePlatformPaymentsAdapterMocked := mocks.NewVehiclePlatformPaymentsAdapter(t)
 
 		vehicle := &entity.Vehicle{}
 
 		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
 			Return(vehicle, nil)
-		vehicleRepositoryMocked.On("Update", ctx, vehicleID, mock.AnythingOfType("entity.Vehicle")).
-			Return(vehicle, nil)
+
+		saleRepositoryMocked.On("GetByVehicleID", ctx, vehicleID).
+			Return(nil, nil)
+
+		vehiclePlatformPaymentsAdapterMocked.On("GeneratePayment", ctx, vehicle.Price, "APPROVED").
+			Return(paymentID, nil)
 
 		saleRepositoryMocked.On("Create", ctx, mock.AnythingOfType("entity.Sale")).
 			Return(nil, nil)
 
-		service := NewVehicleService(vehicleRepositoryMocked, saleRepositoryMocked)
+		service := NewVehicleService(vehicleRepositoryMocked, saleRepositoryMocked, vehiclePlatformPaymentsAdapterMocked)
 
-		actual, err := service.Buy(ctx, vehicleID, userID)
+		actual, err := service.Buy(ctx, vehicleID, buyerDocumentNumber)
 
 		assert.NotNil(t, actual)
 		assert.Nil(t, err)

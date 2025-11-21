@@ -10,7 +10,6 @@ type Vehicle struct {
 	Year      int
 	Color     string
 	Price     float64
-	SoldAt    *time.Time
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

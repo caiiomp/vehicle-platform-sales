@@ -3,21 +3,26 @@ package vehicle
 import (
 	"context"
 	"errors"
-	"time"
 
 	interfaces "github.com/caiiomp/vehicle-platform-sales/src/core/_interfaces"
 	"github.com/caiiomp/vehicle-platform-sales/src/core/domain/entity"
 )
 
 type vehicleService struct {
-	vehicleRepository interfaces.VehicleRepository
-	saleRepository    interfaces.SaleRepository
+	vehicleRepository              interfaces.VehicleRepository
+	saleRepository                 interfaces.SaleRepository
+	vehiclePlatformPaymentsAdapter interfaces.VehiclePlatformPaymentsAdapter
 }
 
-func NewVehicleService(vehicleRepository interfaces.VehicleRepository, saleRepository interfaces.SaleRepository) interfaces.VehicleService {
+func NewVehicleService(
+	vehicleRepository interfaces.VehicleRepository,
+	saleRepository interfaces.SaleRepository,
+	vehiclePlatformPaymentsAdapter interfaces.VehiclePlatformPaymentsAdapter,
+) interfaces.VehicleService {
 	return &vehicleService{
-		vehicleRepository: vehicleRepository,
-		saleRepository:    saleRepository,
+		vehicleRepository:              vehicleRepository,
+		saleRepository:                 saleRepository,
+		vehiclePlatformPaymentsAdapter: vehiclePlatformPaymentsAdapter,
 	}
 }
 
@@ -47,17 +52,25 @@ func (ref *vehicleService) Buy(ctx context.Context, vehicleID, documentNumber st
 		return nil, errors.New("vehicle does not exist")
 	}
 
-	if vehicle.SoldAt != nil {
+	existingSale, err := ref.saleRepository.GetByVehicleID(ctx, vehicleID)
+	if err != nil {
+		return nil, err
+	}
+
+	if existingSale != nil {
 		return nil, errors.New("vehicle already sold")
 	}
 
-	soldTime := time.Now()
+	paymentID, err := ref.vehiclePlatformPaymentsAdapter.GeneratePayment(ctx, vehicle.Price, "APPROVED")
+	if err != nil {
+		return nil, err
+	}
 
 	sale := entity.Sale{
-		VehicleID:      vehicleID,
-		DocumentNumber: documentNumber,
-		Price:          vehicle.Price,
-		SoldAt:         soldTime,
+		VehicleID:           vehicleID,
+		BuyerDocumentNumber: documentNumber,
+		Price:               vehicle.Price,
+		PaymentID:           paymentID,
 	}
 
 	_, err = ref.saleRepository.Create(ctx, sale)
@@ -65,9 +78,5 @@ func (ref *vehicleService) Buy(ctx context.Context, vehicleID, documentNumber st
 		return nil, err
 	}
 
-	soldVehicle := entity.Vehicle{
-		SoldAt: &soldTime,
-	}
-
-	return ref.vehicleRepository.Update(ctx, vehicleID, soldVehicle)
+	return vehicle, nil
 }

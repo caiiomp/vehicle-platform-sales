@@ -202,9 +202,15 @@ func (ref *vehicleApi) buy(ctx *gin.Context) {
 		return
 	}
 
-	userID := ctx.GetString("user_id")
+	var body buyVehicleRequest
+	if err := ctx.ShouldBindJSON(&body); err != nil {
+		ctx.JSON(http.StatusBadRequest, responses.ErrorResponse{
+			Error: err.Error(),
+		})
+		return
+	}
 
-	vehicle, err := ref.vehicleService.Buy(ctx, uri.VehicleID, userID)
+	vehicle, err := ref.vehicleService.Buy(ctx, uri.VehicleID, body.BuyerDocumentNumber)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, responses.ErrorResponse{
 			Error: err.Error(),

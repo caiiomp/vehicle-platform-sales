@@ -7,19 +7,23 @@ import (
 )
 
 type Sale struct {
-	ID             string    `json:"id,omitempty"`
-	VehicleID      string    `json:"vehicle_id"`
-	DocumentNumber string    `json:"document_number"`
-	Price          float64   `json:"price"`
-	SoldAt         time.Time `json:"sold_at"`
+	ID                  string     `json:"id,omitempty"`
+	VehicleID           string     `json:"vehicle_id"`
+	PaymentID           string     `json:"payment_id"`
+	BuyerDocumentNumber string     `json:"buyer_document_number"`
+	Status              string     `json:"status"`
+	Price               float64    `json:"price"`
+	SoldAt              *time.Time `json:"sold_at,omitempty"`
 }
 
 func SaleFromDomain(sale entity.Sale) Sale {
 	return Sale{
-		ID:             sale.ID,
-		VehicleID:      sale.VehicleID,
-		DocumentNumber: sale.DocumentNumber,
-		Price:          sale.Price,
-		SoldAt:         sale.SoldAt,
+		ID:                  sale.ID,
+		VehicleID:           sale.VehicleID,
+		PaymentID:           sale.PaymentID,
+		BuyerDocumentNumber: sale.BuyerDocumentNumber,
+		Status:              sale.Status,
+		Price:               sale.Price,
+		SoldAt:              sale.SoldAt,
 	}
 }
