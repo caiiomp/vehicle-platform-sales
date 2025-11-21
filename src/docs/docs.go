@@ -47,6 +47,49 @@ const docTemplate = `{
                 }
             }
         },
+        "/sales/webhook": {
+            "post": {
+                "description": "Sale Webhook",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sale"
+                ],
+                "summary": "Sale Webhook",
+                "parameters": [
+                    {
+                        "description": "Body",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/saleApi.saleWebhookRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/vehicles": {
             "get": {
                 "description": "Seach vehicles",
@@ -246,6 +289,17 @@ const docTemplate = `{
                     "Vehicle"
                 ],
                 "summary": "Buy Vehicle",
+                "parameters": [
+                    {
+                        "description": "Body",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vehicleApi.buyVehicleRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -287,16 +341,22 @@ const docTemplate = `{
         "responses.Sale": {
             "type": "object",
             "properties": {
-                "document_number": {
+                "buyer_document_number": {
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                },
+                "payment_id": {
                     "type": "string"
                 },
                 "price": {
                     "type": "number"
                 },
                 "sold_at": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 },
                 "vehicle_id": {
@@ -325,14 +385,36 @@ const docTemplate = `{
                 "price": {
                     "type": "number"
                 },
-                "sold_at": {
+                "updated_at": {
                     "type": "string"
                 },
-                "updated_at": {
+                "vehicle_id": {
                     "type": "string"
                 },
                 "year": {
                     "type": "integer"
+                }
+            }
+        },
+        "saleApi.saleWebhookRequest": {
+            "type": "object",
+            "properties": {
+                "payment_id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "vehicleApi.buyVehicleRequest": {
+            "type": "object",
+            "required": [
+                "buyer_document_number"
+            ],
+            "properties": {
+                "buyer_document_number": {
+                    "type": "string"
                 }
             }
         },
@@ -343,6 +425,7 @@ const docTemplate = `{
                 "color",
                 "model",
                 "price",
+                "vehicle_id",
                 "year"
             ],
             "properties": {
@@ -357,6 +440,9 @@ const docTemplate = `{
                 },
                 "price": {
                     "type": "number"
+                },
+                "vehicle_id": {
+                    "type": "string"
                 },
                 "year": {
                     "type": "integer"
