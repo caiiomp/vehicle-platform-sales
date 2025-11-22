@@ -41,25 +41,25 @@ Certifique-se de que você tem as seguintes dependências instaladas:
 3. Na raiz do projeto, inicie o serviço e suas dependências `docker`:
 
     ```bash
-    docker compose up -d
-    ```
-
-    Isso irá iniciar o serviço e as suas dependências localmente via contêiner. O serviço estará disponível em `http://localhost:4002`.
-
-    ⚠️ Para que consigamos rodar todos os serviços integrados, devemos criar uma rede compartilhada no docker. Caso não tenha criada, podemos criar com o seguinte comando:
-
-    ```bash
+    # Cria uma rede compartilhada do docker para a integração entre os serviços
     docker network create shared_network
+
+    # Faz o build das nossas imagens
+    docker compose build
+
+    # Sobe os serviços
+    docker compose up -d
     ```
 
 ### 3. Testando o serviço
 
 Use **Postman**, **Insomnia**, **cURL** ou qualquer outro cliente **HTTP** para testar os endpoints:
 
+- `GET /vehicles` - Listar todos os veículos
 - `GET /vehicles?is_sold=false` - Listar todos os veículos à venda
 - `GET /vehicles?is_sold=true` - Listar todos os veículos vendidos
-- `GET /vehicles/:vehicle_id` - Buscar veículo por id
-- `POST /vehicles/:vehicle_id/buy` - Comprar um veículo
+- `GET /vehicles/:entity_id` - Buscar veículo por id
+- `POST /vehicles/:entity_id/buy` - Comprar um veículo
 - `GET /sales` - Listar todas as vendas
 
 Os testes unitários e os testes de integração podem ser executados da seguinte forma respectivamente:
