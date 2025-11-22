@@ -15,9 +15,9 @@ type VehicleService struct {
 	mock.Mock
 }
 
-// Buy provides a mock function with given fields: ctx, vehicleID, documentNumber
-func (_m *VehicleService) Buy(ctx context.Context, vehicleID string, documentNumber string) (*entity.Vehicle, error) {
-	ret := _m.Called(ctx, vehicleID, documentNumber)
+// Buy provides a mock function with given fields: ctx, entityID, documentNumber
+func (_m *VehicleService) Buy(ctx context.Context, entityID string, documentNumber string) (*entity.Vehicle, error) {
+	ret := _m.Called(ctx, entityID, documentNumber)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Buy")
@@ -26,10 +26,10 @@ func (_m *VehicleService) Buy(ctx context.Context, vehicleID string, documentNum
 	var r0 *entity.Vehicle
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*entity.Vehicle, error)); ok {
-		return rf(ctx, vehicleID, documentNumber)
+		return rf(ctx, entityID, documentNumber)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, string, string) *entity.Vehicle); ok {
-		r0 = rf(ctx, vehicleID, documentNumber)
+		r0 = rf(ctx, entityID, documentNumber)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*entity.Vehicle)
@@ -37,7 +37,7 @@ func (_m *VehicleService) Buy(ctx context.Context, vehicleID string, documentNum
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
-		r1 = rf(ctx, vehicleID, documentNumber)
+		r1 = rf(ctx, entityID, documentNumber)
 	} else {
 		r1 = ret.Error(1)
 	}

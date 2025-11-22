@@ -7,33 +7,33 @@ import (
 )
 
 type Vehicle struct {
-	ID        string    `json:"id,omitempty" bson:"_id,omitempty"`
-	VehicleID string    `json:"vehicle_id,omitempty" bson:"vehicle_id,omitempty"`
-	Brand     string    `json:"brand,omitempty" bson:"brand,omitempty"`
-	Model     string    `json:"model,omitempty" bson:"model,omitempty"`
-	Year      int       `json:"year,omitempty" bson:"year,omitempty"`
-	Color     string    `json:"color,omitempty" bson:"color,omitempty"`
-	Price     float64   `json:"price,omitempty" bson:"price,omitempty"`
-	CreatedAt time.Time `json:"created_at" bson:"created_at,omitempty"`
-	UpdatedAt time.Time `json:"updated_at" bson:"updated_at,omitempty"`
+	ID        int       `db:"id"`
+	EntityID  string    `db:"entity_id"`
+	Brand     string    `db:"brand"`
+	Model     string    `db:"model"`
+	Year      int       `db:"year"`
+	Color     string    `db:"color"`
+	Price     float64   `db:"price"`
+	CreatedAt time.Time `db:"created_at"`
+	UpdatedAt time.Time `db:"updated_at"`
 }
 
 func VehicleFromDomain(vehicle entity.Vehicle) Vehicle {
 	return Vehicle{
-		ID:        vehicle.ID,
-		VehicleID: vehicle.VehicleID,
-		Brand:     vehicle.Brand,
-		Model:     vehicle.Model,
-		Year:      vehicle.Year,
-		Color:     vehicle.Color,
-		Price:     vehicle.Price,
+		ID:       vehicle.ID,
+		EntityID: vehicle.EntityID,
+		Brand:    vehicle.Brand,
+		Model:    vehicle.Model,
+		Year:     vehicle.Year,
+		Color:    vehicle.Color,
+		Price:    vehicle.Price,
 	}
 }
 
 func (ref Vehicle) ToDomain() *entity.Vehicle {
 	return &entity.Vehicle{
 		ID:        ref.ID,
-		VehicleID: ref.VehicleID,
+		EntityID:  ref.EntityID,
 		Brand:     ref.Brand,
 		Model:     ref.Model,
 		Year:      ref.Year,

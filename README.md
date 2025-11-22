@@ -10,7 +10,7 @@ Este repositório contém a API para realizar a compra e listagem dos veículos.
 ## Tecnologias Utilizadas
 
 - **Go (Golang):** Para o desenvolvimento da API de vendas.
-- **MongoDB:** Para o armazenamento dos dados de veículos.
+- **PostgreSQL:** Para o armazenamento dos dados de veículos.
 - **Gin:** Framework web para o desenvolvimento da API.
 - **Docker Compose:** Para o setup do serviço e suas dependências via Docker.
 

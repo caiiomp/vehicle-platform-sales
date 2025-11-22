@@ -7,7 +7,7 @@ import (
 )
 
 type Sale struct {
-	ID                  string     `json:"id,omitempty"`
+	ID                  int        `json:"id,omitempty"`
 	VehicleID           string     `json:"vehicle_id"`
 	PaymentID           string     `json:"payment_id"`
 	BuyerDocumentNumber string     `json:"buyer_document_number"`
@@ -19,7 +19,7 @@ type Sale struct {
 func SaleFromDomain(sale entity.Sale) Sale {
 	return Sale{
 		ID:                  sale.ID,
-		VehicleID:           sale.VehicleID,
+		VehicleID:           sale.EntityID,
 		PaymentID:           sale.PaymentID,
 		BuyerDocumentNumber: sale.BuyerDocumentNumber,
 		Status:              sale.Status,

@@ -1,17 +1,17 @@
 package main
 
 import (
-	"context"
+	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
 	_ "github.com/joho/godotenv/autoload"
+	_ "github.com/lib/pq"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 
 	vehicleplatformpayments "github.com/caiiomp/vehicle-platform-sales/src/adapter/vehiclePlatformPayments"
 	vehiclePlatformPaymentsHttpClient "github.com/caiiomp/vehicle-platform-sales/src/adapter/vehiclePlatformPayments/http"
@@ -21,33 +21,34 @@ import (
 	"github.com/caiiomp/vehicle-platform-sales/src/presentation"
 	"github.com/caiiomp/vehicle-platform-sales/src/presentation/saleApi"
 	"github.com/caiiomp/vehicle-platform-sales/src/presentation/vehicleApi"
-	"github.com/caiiomp/vehicle-platform-sales/src/repositories/mongodb/saleRepository"
-	"github.com/caiiomp/vehicle-platform-sales/src/repositories/mongodb/vehicleRepository"
+	salerepository "github.com/caiiomp/vehicle-platform-sales/src/repositories/postgres/saleRepository"
+	vehiclerepository "github.com/caiiomp/vehicle-platform-sales/src/repositories/postgres/vehicleRepository"
 )
 
 func main() {
 	var (
 		apiPort = os.Getenv("API_PORT")
 
-		mongoURI      = os.Getenv("MONGO_URI")
-		mongoDatabase = os.Getenv("MONGO_DATABASE")
+		host     = os.Getenv("DB_HOST")
+		port     = os.Getenv("DB_PORT")
+		user     = os.Getenv("DB_USER")
+		password = os.Getenv("DB_PASSWORD")
+		dbname   = os.Getenv("DB_NAME")
 
 		vehiclePlatformPaymentsHost = os.Getenv("VEHICLE_PLATFORM_PAYMENTS_HOST")
 		vehiclePlatformSalesHost    = os.Getenv("VEHICLE_PLATFORM_SALES_HOST")
 	)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
+	dataSourceName := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
-	clientOptions := options.Client().ApplyURI(mongoURI)
-
-	mongoClient, err := mongo.Connect(ctx, clientOptions)
+	db, err := sql.Open("postgres", dataSourceName)
 	if err != nil {
-		log.Fatalf("could not initialize mongodb client: %v", err)
+		log.Fatalf("error to connect database: %s", err)
 	}
+	defer db.Close()
 
-	if err = mongoClient.Ping(ctx, nil); err != nil {
-		log.Fatalf("could not connect to database: %v", err)
+	if err := db.Ping(); err != nil {
+		log.Fatalf("error to ping database: %s", err)
 	}
 
 	// HTTP Clients
@@ -59,13 +60,9 @@ func main() {
 	// Adapters
 	vehiclePlatformPaymentsAdapter := vehicleplatformpayments.NewVehiclePlatformPaymentsAdapter(vehiclePlatformPaymentsHttpClient)
 
-	// Collections
-	vehiclesCollection := mongoClient.Database(mongoDatabase).Collection("vehicles")
-	salesCollection := mongoClient.Database(mongoDatabase).Collection("sales")
-
 	// Repositories
-	vehicleRepository := vehicleRepository.NewVehicleRepository(vehiclesCollection)
-	saleRepository := saleRepository.NewSaleRepository(salesCollection)
+	vehicleRepository := vehiclerepository.NewVehicleRepository(db)
+	saleRepository := salerepository.NewSaleRepository(db)
 
 	// Services
 	vehicleService := vehicle.NewVehicleService(vehicleRepository, saleRepository, vehiclePlatformPaymentsAdapter)
@@ -88,5 +85,5 @@ func main() {
 }
 
 func timeGenerator() time.Time {
-	return time.Now()
+	return time.Now().UTC()
 }

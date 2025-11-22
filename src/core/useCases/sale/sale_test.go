@@ -6,12 +6,13 @@ import (
 	"testing"
 	"time"
 
-	mocks "github.com/caiiomp/vehicle-platform-sales/src/core/_mocks"
-	"github.com/caiiomp/vehicle-platform-sales/src/core/domain/entity"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	mocks "github.com/caiiomp/vehicle-platform-sales/src/core/_mocks"
+	"github.com/caiiomp/vehicle-platform-sales/src/core/domain/entity"
 )
 
 func TestCreate(t *testing.T) {
@@ -25,7 +26,7 @@ func TestCreate(t *testing.T) {
 		saleRepositoryMocked := mocks.NewSaleRepository(t)
 
 		sale := entity.Sale{
-			VehicleID:           vehicleID,
+			EntityID:            vehicleID,
 			BuyerDocumentNumber: documentNumber,
 			Price:               50000,
 			SoldAt:              &now,
@@ -46,7 +47,7 @@ func TestCreate(t *testing.T) {
 		saleRepositoryMocked := mocks.NewSaleRepository(t)
 
 		sale := entity.Sale{
-			VehicleID:           vehicleID,
+			EntityID:            vehicleID,
 			BuyerDocumentNumber: documentNumber,
 			Price:               50000,
 			SoldAt:              &now,
@@ -66,7 +67,7 @@ func TestCreate(t *testing.T) {
 
 func TestSearch(t *testing.T) {
 	ctx := context.TODO()
-	vehicleID := primitive.NewObjectID().Hex()
+	entityID := uuid.NewString()
 	documentNumber := primitive.NewObjectID().Hex()
 	unexpectedError := errors.New("unexpected error")
 	now := time.Now()
@@ -90,7 +91,7 @@ func TestSearch(t *testing.T) {
 
 		sales := []entity.Sale{
 			{
-				VehicleID:           vehicleID,
+				EntityID:            entityID,
 				BuyerDocumentNumber: documentNumber,
 				Price:               50000,
 				SoldAt:              &now,
@@ -111,7 +112,6 @@ func TestSearch(t *testing.T) {
 
 func TestUpdateStatusByPaymentID(t *testing.T) {
 	ctx := context.TODO()
-	saleID := uuid.NewString()
 	vehicleID := uuid.NewString()
 	paymentID := uuid.NewString()
 	buyerDocumentNumber := uuid.NewString()
@@ -119,8 +119,8 @@ func TestUpdateStatusByPaymentID(t *testing.T) {
 	soldAt := time.Now()
 
 	sale := entity.Sale{
-		ID:                  saleID,
-		VehicleID:           vehicleID,
+		ID:                  1,
+		EntityID:            vehicleID,
 		PaymentID:           paymentID,
 		BuyerDocumentNumber: buyerDocumentNumber,
 		Price:               50000,
@@ -130,7 +130,7 @@ func TestUpdateStatusByPaymentID(t *testing.T) {
 
 	saleRepositoryMocked := mocks.NewSaleRepository(t)
 
-	saleRepositoryMocked.On("UpdateStatusByPaymentID", ctx, paymentID, status, mock.AnythingOfType("*time.Time")).
+	saleRepositoryMocked.On("UpdateStatusByPaymentID", ctx, paymentID, status, mock.AnythingOfType("time.Time")).
 		Return(&sale, nil)
 
 	service := NewSaleService(saleRepositoryMocked, time.Now)

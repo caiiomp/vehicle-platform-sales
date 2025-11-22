@@ -11,8 +11,7 @@ import (
 )
 
 func TestSaleFromDomain(t *testing.T) {
-	saleID := primitive.NewObjectID().Hex()
-	vehicleID := primitive.NewObjectID().Hex()
+	entityID := primitive.NewObjectID().Hex()
 	documentNumber := primitive.NewObjectID().Hex()
 	paymentID := uuid.NewString()
 	status := "APPROVED"
@@ -20,8 +19,8 @@ func TestSaleFromDomain(t *testing.T) {
 	now := time.Now()
 
 	sale := entity.Sale{
-		ID:                  saleID,
-		VehicleID:           vehicleID,
+		ID:                  1,
+		EntityID:            entityID,
 		BuyerDocumentNumber: documentNumber,
 		Price:               80000,
 		SoldAt:              &now,
@@ -30,8 +29,8 @@ func TestSaleFromDomain(t *testing.T) {
 	}
 
 	expected := Sale{
-		ID:                  saleID,
-		VehicleID:           vehicleID,
+		ID:                  1,
+		VehicleID:           entityID,
 		BuyerDocumentNumber: documentNumber,
 		Price:               80000,
 		SoldAt:              &now,

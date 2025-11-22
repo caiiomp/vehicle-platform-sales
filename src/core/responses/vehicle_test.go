@@ -4,18 +4,20 @@ import (
 	"testing"
 	"time"
 
-	"github.com/caiiomp/vehicle-platform-sales/src/core/domain/entity"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	"github.com/caiiomp/vehicle-platform-sales/src/core/domain/entity"
 )
 
 func TestVehicleFromDomain(t *testing.T) {
-	vehicleID := primitive.NewObjectID().Hex()
+	entityID := uuid.NewString()
 
 	now := time.Now()
 
 	vehicle := entity.Vehicle{
-		ID:        vehicleID,
+		ID:        1,
+		EntityID:  entityID,
 		Brand:     "Some Brand",
 		Model:     "Some Model",
 		Year:      2025,
@@ -26,7 +28,8 @@ func TestVehicleFromDomain(t *testing.T) {
 	}
 
 	expected := Vehicle{
-		ID:        vehicleID,
+		ID:        1,
+		EntityID:  entityID,
 		Brand:     "Some Brand",
 		Model:     "Some Model",
 		Year:      2025,

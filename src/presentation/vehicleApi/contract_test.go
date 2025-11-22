@@ -3,8 +3,9 @@ package vehicleApi
 import (
 	"testing"
 
-	"github.com/caiiomp/vehicle-platform-sales/src/core/domain/entity"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/caiiomp/vehicle-platform-sales/src/core/domain/entity"
 )
 
 func Test_createVehicleRequestToDomain(t *testing.T) {

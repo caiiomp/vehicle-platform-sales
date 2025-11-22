@@ -30,5 +30,5 @@ func (ref *saleService) Search(ctx context.Context) ([]entity.Sale, error) {
 
 func (ref *saleService) UpdateStatusByPaymentID(ctx context.Context, paymentID string, status string) (*entity.Sale, error) {
 	soldDate := ref.timeGenerator()
-	return ref.saleRepository.UpdateStatusByPaymentID(ctx, paymentID, status, &soldDate)
+	return ref.saleRepository.UpdateStatusByPaymentID(ctx, paymentID, status, soldDate)
 }
