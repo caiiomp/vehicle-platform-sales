@@ -15,17 +15,17 @@ type createVehicleRequest struct {
 
 func (ref createVehicleRequest) ToDomain() *entity.Vehicle {
 	return &entity.Vehicle{
-		VehicleID: ref.VehicleID,
-		Brand:     ref.Brand,
-		Model:     ref.Model,
-		Year:      ref.Year,
-		Color:     ref.Color,
-		Price:     ref.Price,
+		EntityID: ref.VehicleID,
+		Brand:    ref.Brand,
+		Model:    ref.Model,
+		Year:     ref.Year,
+		Color:    ref.Color,
+		Price:    ref.Price,
 	}
 }
 
-type vehicleURI struct {
-	VehicleID string `uri:"vehicle_id"`
+type entityUri struct {
+	EntityID string `uri:"entity_id"`
 }
 
 type updateVehicleRequest struct {

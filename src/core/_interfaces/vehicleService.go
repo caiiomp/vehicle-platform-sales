@@ -11,5 +11,5 @@ type VehicleService interface {
 	GetByID(ctx context.Context, id string) (*entity.Vehicle, error)
 	Search(ctx context.Context, isSold *bool) ([]entity.Vehicle, error)
 	Update(ctx context.Context, id string, vehicle entity.Vehicle) (*entity.Vehicle, error)
-	Buy(ctx context.Context, vehicleID, documentNumber string) (*entity.Vehicle, error)
+	Buy(ctx context.Context, entityID, documentNumber string) (*entity.Vehicle, error)
 }

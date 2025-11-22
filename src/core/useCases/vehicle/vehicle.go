@@ -42,8 +42,8 @@ func (ref *vehicleService) Update(ctx context.Context, id string, vehicle entity
 	return ref.vehicleRepository.Update(ctx, id, vehicle)
 }
 
-func (ref *vehicleService) Buy(ctx context.Context, vehicleID, documentNumber string) (*entity.Vehicle, error) {
-	vehicle, err := ref.vehicleRepository.GetByID(ctx, vehicleID)
+func (ref *vehicleService) Buy(ctx context.Context, entityID, buyerDocumentNumber string) (*entity.Vehicle, error) {
+	vehicle, err := ref.vehicleRepository.GetByID(ctx, entityID)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func (ref *vehicleService) Buy(ctx context.Context, vehicleID, documentNumber st
 		return nil, errors.New("vehicle does not exist")
 	}
 
-	existingSale, err := ref.saleRepository.GetByVehicleID(ctx, vehicleID)
+	existingSale, err := ref.saleRepository.GetByEntityID(ctx, entityID)
 	if err != nil {
 		return nil, err
 	}
@@ -67,10 +67,10 @@ func (ref *vehicleService) Buy(ctx context.Context, vehicleID, documentNumber st
 	}
 
 	sale := entity.Sale{
-		VehicleID:           vehicleID,
-		BuyerDocumentNumber: documentNumber,
-		Price:               vehicle.Price,
+		EntityID:            entityID,
 		PaymentID:           paymentID,
+		BuyerDocumentNumber: buyerDocumentNumber,
+		Price:               vehicle.Price,
 	}
 
 	_, err = ref.saleRepository.Create(ctx, sale)

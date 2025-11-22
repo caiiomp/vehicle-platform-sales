@@ -1,15 +1,31 @@
 services:
-  mongo:
-    image: mongo:latest
-    container_name: mongo-vehicle-platform-sales
+  postgres:
+    image: postgres:latest
+    container_name: postgres-vehicle-platform-sales
     restart: always
     ports:
-      - "27017:27017"
+      - "5432:5432"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: docker
-      MONGO_INITDB_ROOT_PASSWORD: docker
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: vehicle-platform-sales
     volumes:
-      - mongo_data:/data/db
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - shared_network
+
+  migrate:
+    image: migrate/migrate:latest
+    container_name: migrations-vehicle-platform-sales
+    depends_on:
+      - postgres
+    volumes:
+      - ./db/migrations:/migrations
+    command: [
+      "-path", "/migrations",
+      "-database", "postgres://docker:docker@postgres:5432/vehicle-platform-sales?sslmode=disable",
+      "up"
+    ]
     networks:
       - shared_network
 
@@ -18,20 +34,24 @@ services:
     container_name: api-vehicle-platform-sales
     restart: always
     depends_on:
-      - mongo
+      - postgres
+      - migrate
     ports:
       - "4002:4002"
     environment:
       API_PORT: "4002"
-      MONGO_URI: "mongodb://docker:docker@mongo:27017"
-      MONGO_DATABASE: "vehicle-platform-sales"
+      DB_HOST: "postgres"
+      DB_PORT: "5432"
+      DB_USER: "docker"
+      DB_PASSWORD: "docker"
+      DB_NAME: "vehicle-platform-sales"
       VEHICLE_PLATFORM_PAYMENTS_HOST: "http://vehicle-platform-payments:4003"
       VEHICLE_PLATFORM_SALES_HOST: "http://vehicle-platform-sales:4002"
     networks:
       - shared_network
 
 volumes:
-  mongo_data:
+  postgres_data:
 
 networks:
   shared_network:

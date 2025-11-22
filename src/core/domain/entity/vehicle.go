@@ -3,8 +3,8 @@ package entity
 import "time"
 
 type Vehicle struct {
-	ID        string
-	VehicleID string
+	ID        int
+	EntityID  string
 	Brand     string
 	Model     string
 	Year      int

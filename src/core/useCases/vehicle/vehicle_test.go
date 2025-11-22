@@ -6,12 +6,13 @@ import (
 	"testing"
 	"time"
 
-	mocks "github.com/caiiomp/vehicle-platform-sales/src/core/_mocks"
-	"github.com/caiiomp/vehicle-platform-sales/src/core/domain/entity"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	mocks "github.com/caiiomp/vehicle-platform-sales/src/core/_mocks"
+	"github.com/caiiomp/vehicle-platform-sales/src/core/domain/entity"
 )
 
 func TestCreate(t *testing.T) {
@@ -42,18 +43,18 @@ func TestCreate(t *testing.T) {
 
 func TestGetByID(t *testing.T) {
 	ctx := context.TODO()
-	vehicleID := primitive.NewObjectID().Hex()
+	entityID := uuid.NewString()
 	unexpectedError := errors.New("unexpected error")
 
 	t.Run("should not get vehicle by id when failed to get", func(t *testing.T) {
 		vehicleRepositoryMocked := mocks.NewVehicleRepository(t)
 
-		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
+		vehicleRepositoryMocked.On("GetByID", ctx, entityID).
 			Return(nil, unexpectedError)
 
 		service := NewVehicleService(vehicleRepositoryMocked, nil, nil)
 
-		actual, err := service.GetByID(ctx, vehicleID)
+		actual, err := service.GetByID(ctx, entityID)
 
 		assert.Nil(t, actual)
 		assert.Equal(t, unexpectedError, err)
@@ -65,7 +66,8 @@ func TestGetByID(t *testing.T) {
 		now := time.Now()
 
 		vehicle := &entity.Vehicle{
-			ID:        vehicleID,
+			ID:        1,
+			EntityID:  entityID,
 			Brand:     "Some Brand",
 			Model:     "Some Model",
 			Year:      2025,
@@ -75,12 +77,12 @@ func TestGetByID(t *testing.T) {
 			UpdatedAt: now,
 		}
 
-		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
+		vehicleRepositoryMocked.On("GetByID", ctx, entityID).
 			Return(vehicle, nil)
 
 		service := NewVehicleService(vehicleRepositoryMocked, nil, nil)
 
-		actual, err := service.GetByID(ctx, vehicleID)
+		actual, err := service.GetByID(ctx, entityID)
 
 		assert.NotNil(t, actual)
 		assert.Nil(t, err)
@@ -160,8 +162,7 @@ func TestUpdate(t *testing.T) {
 
 func TestBuy(t *testing.T) {
 	ctx := context.TODO()
-	vehicleID := uuid.NewString()
-	saleID := uuid.NewString()
+	entityID := uuid.NewString()
 	paymentID := uuid.NewString()
 	buyerDocumentNumber := uuid.NewString()
 	unexpectedError := errors.New("unexpected error")
@@ -171,12 +172,12 @@ func TestBuy(t *testing.T) {
 		saleRepositoryMocked := mocks.NewSaleRepository(t)
 		vehiclePlatformPaymentsAdapterMocked := mocks.NewVehiclePlatformPaymentsAdapter(t)
 
-		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
+		vehicleRepositoryMocked.On("GetByID", ctx, entityID).
 			Return(nil, unexpectedError)
 
 		service := NewVehicleService(vehicleRepositoryMocked, nil, nil)
 
-		actual, err := service.Buy(ctx, vehicleID, buyerDocumentNumber)
+		actual, err := service.Buy(ctx, entityID, buyerDocumentNumber)
 
 		assert.Nil(t, actual)
 		assert.Equal(t, unexpectedError, err)
@@ -189,12 +190,12 @@ func TestBuy(t *testing.T) {
 		saleRepositoryMocked := mocks.NewSaleRepository(t)
 		vehiclePlatformPaymentsAdapterMocked := mocks.NewVehiclePlatformPaymentsAdapter(t)
 
-		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
+		vehicleRepositoryMocked.On("GetByID", ctx, entityID).
 			Return(nil, nil)
 
 		service := NewVehicleService(vehicleRepositoryMocked, nil, nil)
 
-		actual, err := service.Buy(ctx, vehicleID, buyerDocumentNumber)
+		actual, err := service.Buy(ctx, entityID, buyerDocumentNumber)
 
 		assert.Nil(t, actual)
 		assert.ErrorContains(t, err, "vehicle does not exist")
@@ -208,24 +209,24 @@ func TestBuy(t *testing.T) {
 		vehiclePlatformPaymentsAdapterMocked := mocks.NewVehiclePlatformPaymentsAdapter(t)
 
 		vehicle := &entity.Vehicle{
-			ID:        vehicleID,
-			VehicleID: vehicleID,
-			Brand:     "Some Brand",
-			Model:     "Some Model",
-			Year:      2000,
-			Color:     "Black",
-			Price:     20000,
+			ID:       1,
+			EntityID: entityID,
+			Brand:    "Some Brand",
+			Model:    "Some Model",
+			Year:     2000,
+			Color:    "Black",
+			Price:    20000,
 		}
 
-		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
+		vehicleRepositoryMocked.On("GetByID", ctx, entityID).
 			Return(vehicle, nil)
 
-		saleRepositoryMocked.On("GetByVehicleID", ctx, vehicleID).
+		saleRepositoryMocked.On("GetByEntityID", ctx, entityID).
 			Return(nil, unexpectedError)
 
 		service := NewVehicleService(vehicleRepositoryMocked, saleRepositoryMocked, nil)
 
-		actual, err := service.Buy(ctx, vehicleID, buyerDocumentNumber)
+		actual, err := service.Buy(ctx, entityID, buyerDocumentNumber)
 
 		assert.Nil(t, actual)
 		assert.Equal(t, unexpectedError, err)
@@ -239,33 +240,33 @@ func TestBuy(t *testing.T) {
 		vehiclePlatformPaymentsAdapterMocked := mocks.NewVehiclePlatformPaymentsAdapter(t)
 
 		vehicle := &entity.Vehicle{
-			ID:        vehicleID,
-			VehicleID: vehicleID,
-			Brand:     "Some Brand",
-			Model:     "Some Model",
-			Year:      2000,
-			Color:     "Black",
-			Price:     20000,
+			ID:       1,
+			EntityID: entityID,
+			Brand:    "Some Brand",
+			Model:    "Some Model",
+			Year:     2000,
+			Color:    "Black",
+			Price:    20000,
 		}
 
 		sale := &entity.Sale{
-			ID:                  saleID,
-			VehicleID:           vehicleID,
+			ID:                  1,
+			EntityID:            entityID,
 			PaymentID:           paymentID,
 			BuyerDocumentNumber: buyerDocumentNumber,
 			Price:               10000,
 			Status:              "APPROVED",
 		}
 
-		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
+		vehicleRepositoryMocked.On("GetByID", ctx, entityID).
 			Return(vehicle, nil)
 
-		saleRepositoryMocked.On("GetByVehicleID", ctx, vehicleID).
+		saleRepositoryMocked.On("GetByEntityID", ctx, entityID).
 			Return(sale, nil)
 
 		service := NewVehicleService(vehicleRepositoryMocked, saleRepositoryMocked, nil)
 
-		actual, err := service.Buy(ctx, vehicleID, buyerDocumentNumber)
+		actual, err := service.Buy(ctx, entityID, buyerDocumentNumber)
 
 		assert.Nil(t, actual)
 		assert.ErrorContains(t, err, "vehicle already sold")
@@ -282,10 +283,10 @@ func TestBuy(t *testing.T) {
 			Price: 10000,
 		}
 
-		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
+		vehicleRepositoryMocked.On("GetByID", ctx, entityID).
 			Return(vehicle, nil)
 
-		saleRepositoryMocked.On("GetByVehicleID", ctx, vehicleID).
+		saleRepositoryMocked.On("GetByEntityID", ctx, entityID).
 			Return(nil, nil)
 
 		vehiclePlatformPaymentsAdapterMocked.On("GeneratePayment", ctx, vehicle.Price, "APPROVED").
@@ -293,7 +294,7 @@ func TestBuy(t *testing.T) {
 
 		service := NewVehicleService(vehicleRepositoryMocked, saleRepositoryMocked, vehiclePlatformPaymentsAdapterMocked)
 
-		actual, err := service.Buy(ctx, vehicleID, buyerDocumentNumber)
+		actual, err := service.Buy(ctx, entityID, buyerDocumentNumber)
 
 		assert.Nil(t, actual)
 		assert.Equal(t, unexpectedError, err)
@@ -307,10 +308,10 @@ func TestBuy(t *testing.T) {
 
 		vehicle := &entity.Vehicle{}
 
-		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
+		vehicleRepositoryMocked.On("GetByID", ctx, entityID).
 			Return(vehicle, nil)
 
-		saleRepositoryMocked.On("GetByVehicleID", ctx, vehicleID).
+		saleRepositoryMocked.On("GetByEntityID", ctx, entityID).
 			Return(nil, nil)
 
 		vehiclePlatformPaymentsAdapterMocked.On("GeneratePayment", ctx, vehicle.Price, "APPROVED").
@@ -321,7 +322,7 @@ func TestBuy(t *testing.T) {
 
 		service := NewVehicleService(vehicleRepositoryMocked, saleRepositoryMocked, vehiclePlatformPaymentsAdapterMocked)
 
-		actual, err := service.Buy(ctx, vehicleID, buyerDocumentNumber)
+		actual, err := service.Buy(ctx, entityID, buyerDocumentNumber)
 
 		assert.Nil(t, actual)
 		assert.Equal(t, unexpectedError, err)
@@ -334,10 +335,10 @@ func TestBuy(t *testing.T) {
 
 		vehicle := &entity.Vehicle{}
 
-		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
+		vehicleRepositoryMocked.On("GetByID", ctx, entityID).
 			Return(vehicle, nil)
 
-		saleRepositoryMocked.On("GetByVehicleID", ctx, vehicleID).
+		saleRepositoryMocked.On("GetByEntityID", ctx, entityID).
 			Return(nil, nil)
 
 		vehiclePlatformPaymentsAdapterMocked.On("GeneratePayment", ctx, vehicle.Price, "APPROVED").
@@ -348,7 +349,7 @@ func TestBuy(t *testing.T) {
 
 		service := NewVehicleService(vehicleRepositoryMocked, saleRepositoryMocked, vehiclePlatformPaymentsAdapterMocked)
 
-		actual, err := service.Buy(ctx, vehicleID, buyerDocumentNumber)
+		actual, err := service.Buy(ctx, entityID, buyerDocumentNumber)
 
 		assert.NotNil(t, actual)
 		assert.Nil(t, err)

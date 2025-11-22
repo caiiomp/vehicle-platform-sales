@@ -3,9 +3,10 @@ package vehicleApi
 import (
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	interfaces "github.com/caiiomp/vehicle-platform-sales/src/core/_interfaces"
 	"github.com/caiiomp/vehicle-platform-sales/src/core/responses"
-	"github.com/gin-gonic/gin"
 )
 
 type vehicleApi struct {
@@ -19,9 +20,9 @@ func RegisterVehicleRoutes(app *gin.Engine, vehicleService interfaces.VehicleSer
 
 	app.POST("/vehicles", service.create)
 	app.GET("/vehicles", service.search)
-	app.GET("/vehicles/:vehicle_id", service.get)
-	app.PATCH("/vehicles/:vehicle_id", service.update)
-	app.POST("/vehicles/:vehicle_id/buy", service.buy)
+	app.GET("/vehicles/:entity_id", service.get)
+	app.PATCH("/vehicles/:entity_id", service.update)
+	app.POST("/vehicles/:entity_id/buy", service.buy)
 }
 
 // Create godoc
@@ -109,9 +110,9 @@ func (ref *vehicleApi) search(ctx *gin.Context) {
 // @Failure 204 {object} responses.ErrorResponse
 // @Failure 400 {object} responses.ErrorResponse
 // @Failure 500 {object} responses.ErrorResponse
-// @Router /vehicles/{vehicle_id} [get]
+// @Router /vehicles/{entity_id} [get]
 func (ref *vehicleApi) get(ctx *gin.Context) {
-	var uri vehicleURI
+	var uri entityUri
 	if err := ctx.ShouldBindUri(&uri); err != nil {
 		ctx.JSON(http.StatusBadRequest, responses.ErrorResponse{
 			Error: err.Error(),
@@ -119,7 +120,7 @@ func (ref *vehicleApi) get(ctx *gin.Context) {
 		return
 	}
 
-	vehicle, err := ref.vehicleService.GetByID(ctx, uri.VehicleID)
+	vehicle, err := ref.vehicleService.GetByID(ctx, uri.EntityID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, responses.ErrorResponse{
 			Error: err.Error(),
@@ -147,9 +148,9 @@ func (ref *vehicleApi) get(ctx *gin.Context) {
 // @Failure 204 {object} responses.ErrorResponse
 // @Failure 400 {object} responses.ErrorResponse
 // @Failure 500 {object} responses.ErrorResponse
-// @Router /vehicles/{vehicle_id} [patch]
+// @Router /vehicles/{entity_id} [patch]
 func (ref *vehicleApi) update(ctx *gin.Context) {
-	var uri vehicleURI
+	var uri entityUri
 	if err := ctx.ShouldBindUri(&uri); err != nil {
 		ctx.JSON(http.StatusBadRequest, responses.ErrorResponse{
 			Error: err.Error(),
@@ -165,7 +166,7 @@ func (ref *vehicleApi) update(ctx *gin.Context) {
 		return
 	}
 
-	vehicle, err := ref.vehicleService.Update(ctx, uri.VehicleID, *request.ToDomain())
+	vehicle, err := ref.vehicleService.Update(ctx, uri.EntityID, *request.ToDomain())
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, responses.ErrorResponse{
 			Error: err.Error(),
@@ -193,9 +194,9 @@ func (ref *vehicleApi) update(ctx *gin.Context) {
 // @Failure 204 {object} responses.ErrorResponse
 // @Failure 400 {object} responses.ErrorResponse
 // @Failure 500 {object} responses.ErrorResponse
-// @Router /vehicles/{vehicle_id}/buy [post]
+// @Router /vehicles/{entity_id}/buy [post]
 func (ref *vehicleApi) buy(ctx *gin.Context) {
-	var uri vehicleURI
+	var uri entityUri
 	if err := ctx.ShouldBindUri(&uri); err != nil {
 		ctx.JSON(http.StatusBadRequest, responses.ErrorResponse{
 			Error: err.Error(),
@@ -211,7 +212,7 @@ func (ref *vehicleApi) buy(ctx *gin.Context) {
 		return
 	}
 
-	vehicle, err := ref.vehicleService.Buy(ctx, uri.VehicleID, body.BuyerDocumentNumber)
+	vehicle, err := ref.vehicleService.Buy(ctx, uri.EntityID, body.BuyerDocumentNumber)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, responses.ErrorResponse{
 			Error: err.Error(),
