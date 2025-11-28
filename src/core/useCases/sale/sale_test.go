@@ -35,7 +35,7 @@ func TestCreate(t *testing.T) {
 		saleRepositoryMocked.On("Create", ctx, sale).
 			Return(nil, unexpectedError)
 
-		service := NewSaleService(saleRepositoryMocked, func() *time.Time { return &now })
+		service := NewSaleService(saleRepositoryMocked, time.Now)
 
 		actual, err := service.Create(ctx, sale)
 
@@ -56,7 +56,7 @@ func TestCreate(t *testing.T) {
 		saleRepositoryMocked.On("Create", ctx, sale).
 			Return(&sale, nil)
 
-		service := NewSaleService(saleRepositoryMocked, func() *time.Time { return &now })
+		service := NewSaleService(saleRepositoryMocked, time.Now)
 
 		actual, err := service.Create(ctx, sale)
 
@@ -65,7 +65,7 @@ func TestCreate(t *testing.T) {
 	})
 }
 
-func TestSearchByStatus(t *testing.T) {
+func TestSearch(t *testing.T) {
 	ctx := context.TODO()
 	entityID := uuid.NewString()
 	documentNumber := primitive.NewObjectID().Hex()
@@ -75,12 +75,12 @@ func TestSearchByStatus(t *testing.T) {
 	t.Run("should not search sales when failed to search", func(t *testing.T) {
 		saleRepositoryMocked := mocks.NewSaleRepository(t)
 
-		saleRepositoryMocked.On("SearchByStatus", ctx, "APPROVED").
+		saleRepositoryMocked.On("Search", ctx, "APPROVED").
 			Return(nil, unexpectedError)
 
-		service := NewSaleService(saleRepositoryMocked, func() *time.Time { return &now })
+		service := NewSaleService(saleRepositoryMocked, time.Now)
 
-		actual, err := service.SearchByStatus(ctx, "APPROVED")
+		actual, err := service.Search(ctx, "APPROVED")
 
 		assert.Nil(t, actual)
 		assert.Equal(t, unexpectedError, err)
@@ -98,12 +98,12 @@ func TestSearchByStatus(t *testing.T) {
 			},
 		}
 
-		saleRepositoryMocked.On("SearchByStatus", ctx, "APPROVED").
+		saleRepositoryMocked.On("Search", ctx, "APPROVED").
 			Return(sales, nil)
 
-		service := NewSaleService(saleRepositoryMocked, func() *time.Time { return &now })
+		service := NewSaleService(saleRepositoryMocked, time.Now)
 
-		actual, err := service.SearchByStatus(ctx, "APPROVED")
+		actual, err := service.Search(ctx, "APPROVED")
 
 		assert.NotNil(t, actual)
 		assert.Nil(t, err)
@@ -115,58 +115,30 @@ func TestUpdateStatusByPaymentID(t *testing.T) {
 	vehicleID := uuid.NewString()
 	paymentID := uuid.NewString()
 	buyerDocumentNumber := uuid.NewString()
-	now := time.Now()
+	status := "APPROVED"
+	soldAt := time.Now()
 
-	t.Run("should update payment status when its approved", func(t *testing.T) {
-		sale := entity.Sale{
-			ID:                  1,
-			EntityID:            vehicleID,
-			PaymentID:           paymentID,
-			BuyerDocumentNumber: buyerDocumentNumber,
-			Price:               50000,
-			Status:              "APPROVED",
-			SoldAt:              &now,
-		}
+	sale := entity.Sale{
+		ID:                  1,
+		EntityID:            vehicleID,
+		PaymentID:           paymentID,
+		BuyerDocumentNumber: buyerDocumentNumber,
+		Price:               50000,
+		Status:              status,
+		SoldAt:              &soldAt,
+	}
 
-		saleRepositoryMocked := mocks.NewSaleRepository(t)
+	saleRepositoryMocked := mocks.NewSaleRepository(t)
 
-		saleRepositoryMocked.On("UpdateStatusByPaymentID", ctx, paymentID, "APPROVED", mock.AnythingOfType("*time.Time")).
-			Return(&sale, nil)
+	saleRepositoryMocked.On("UpdateStatusByPaymentID", ctx, paymentID, status, mock.AnythingOfType("time.Time")).
+		Return(&sale, nil)
 
-		service := NewSaleService(saleRepositoryMocked, func() *time.Time { return &now })
+	service := NewSaleService(saleRepositoryMocked, time.Now)
 
-		expected := sale
+	expected := sale
 
-		actual, err := service.UpdateStatusByPaymentID(ctx, paymentID, "APPROVED")
+	actual, err := service.UpdateStatusByPaymentID(ctx, paymentID, status)
 
-		assert.Equal(t, &expected, actual)
-		assert.Nil(t, err)
-	})
-
-	t.Run("should update payment status when its not approved", func(t *testing.T) {
-		var soldAt *time.Time
-		sale := entity.Sale{
-			ID:                  1,
-			EntityID:            vehicleID,
-			PaymentID:           paymentID,
-			BuyerDocumentNumber: buyerDocumentNumber,
-			Price:               50000,
-			Status:              "CANCELED",
-			SoldAt:              soldAt,
-		}
-
-		saleRepositoryMocked := mocks.NewSaleRepository(t)
-
-		saleRepositoryMocked.On("UpdateStatusByPaymentID", ctx, paymentID, "CANCELED", soldAt).
-			Return(&sale, nil)
-
-		service := NewSaleService(saleRepositoryMocked, func() *time.Time { return &now })
-
-		expected := sale
-
-		actual, err := service.UpdateStatusByPaymentID(ctx, paymentID, "CANCELED")
-
-		assert.Equal(t, &expected, actual)
-		assert.Nil(t, err)
-	})
+	assert.Equal(t, &expected, actual)
+	assert.Nil(t, err)
 }

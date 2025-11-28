@@ -61,18 +61,16 @@ func (ref *vehicleService) Buy(ctx context.Context, entityID, buyerDocumentNumbe
 		return nil, nil
 	}
 
-	sales, err := ref.saleRepository.SearchByEntityID(ctx, entityID)
+	existingSale, err := ref.saleRepository.GetByEntityID(ctx, entityID)
 	if err != nil {
 		return nil, err
 	}
 
-	alreadySold := ref.vehicleAlreadySold(sales)
-
-	if alreadySold {
+	if existingSale != nil && existingSale.Status == "APPROVED" {
 		return nil, errors.New("vehicle already sold")
 	}
 
-	paymentID, err := ref.vehiclePlatformPaymentsAdapter.GeneratePayment(ctx, vehicle.Price)
+	paymentID, err := ref.vehiclePlatformPaymentsAdapter.GeneratePayment(ctx, vehicle.Price, "APPROVED")
 	if err != nil {
 		return nil, err
 	}
@@ -90,18 +88,4 @@ func (ref *vehicleService) Buy(ctx context.Context, entityID, buyerDocumentNumbe
 	}
 
 	return vehicle, nil
-}
-
-func (ref *vehicleService) vehicleAlreadySold(sales []entity.Sale) bool {
-	if len(sales) == 0 {
-		return false
-	}
-
-	for _, sale := range sales {
-		if sale.Status == "APPROVED" {
-			return true
-		}
-	}
-
-	return false
 }

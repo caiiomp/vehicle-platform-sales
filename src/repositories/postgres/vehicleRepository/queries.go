@@ -32,11 +32,10 @@ const (
 	`
 
 	searchNotSoldVehicles = `
-		SELECT DISTINCT v.id, v.entity_id, v.brand, v.model, v.year, v.color, v.price, v.created_at, v.updated_at 
-		FROM vehicles v
-		JOIN sales s
+		SELECT v.* FROM vehicles v
+		LEFT JOIN sales s
 		ON v.entity_id = s.entity_id
-		WHERE s.status != 'APPROVED' AND s.sold_at IS NULL
+		WHERE s.entity_id IS NULL OR (s.status != 'APPROVED' AND s.sold_at IS NULL)
 		ORDER BY v.price ASC;
 	`
 )

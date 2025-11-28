@@ -17,6 +17,6 @@ func NewVehiclePlatformPaymentsAdapter(httpClient http.VehiclePlatformPaymentsHt
 	}
 }
 
-func (ref *vehiclePlatformPaymentsAdapter) GeneratePayment(ctx context.Context, amount float64) (string, error) {
-	return ref.httpClient.GeneratePayment(ctx, amount)
+func (ref *vehiclePlatformPaymentsAdapter) GeneratePayment(ctx context.Context, amount float64, status string) (string, error) {
+	return ref.httpClient.GeneratePayment(ctx, amount, status)
 }
