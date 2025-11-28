@@ -108,7 +108,7 @@ func (_m *SaleRepository) Search(ctx context.Context, status string) ([]entity.S
 }
 
 // UpdateStatusByPaymentID provides a mock function with given fields: ctx, paymentID, status, soldDate
-func (_m *SaleRepository) UpdateStatusByPaymentID(ctx context.Context, paymentID string, status string, soldDate time.Time) (*entity.Sale, error) {
+func (_m *SaleRepository) UpdateStatusByPaymentID(ctx context.Context, paymentID string, status string, soldDate *time.Time) (*entity.Sale, error) {
 	ret := _m.Called(ctx, paymentID, status, soldDate)
 
 	if len(ret) == 0 {
@@ -117,10 +117,10 @@ func (_m *SaleRepository) UpdateStatusByPaymentID(ctx context.Context, paymentID
 
 	var r0 *entity.Sale
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, time.Time) (*entity.Sale, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *time.Time) (*entity.Sale, error)); ok {
 		return rf(ctx, paymentID, status, soldDate)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, time.Time) *entity.Sale); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *time.Time) *entity.Sale); ok {
 		r0 = rf(ctx, paymentID, status, soldDate)
 	} else {
 		if ret.Get(0) != nil {
@@ -128,7 +128,7 @@ func (_m *SaleRepository) UpdateStatusByPaymentID(ctx context.Context, paymentID
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string, string, time.Time) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, string, string, *time.Time) error); ok {
 		r1 = rf(ctx, paymentID, status, soldDate)
 	} else {
 		r1 = ret.Error(1)
