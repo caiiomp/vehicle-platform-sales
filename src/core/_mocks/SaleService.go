@@ -45,9 +45,9 @@ func (_m *SaleService) Create(ctx context.Context, sale entity.Sale) (*entity.Sa
 	return r0, r1
 }
 
-// Search provides a mock function with given fields: ctx, status
-func (_m *SaleService) Search(ctx context.Context, status string) ([]entity.Sale, error) {
-	ret := _m.Called(ctx, status)
+// Search provides a mock function with given fields: ctx
+func (_m *SaleService) Search(ctx context.Context) ([]entity.Sale, error) {
+	ret := _m.Called(ctx)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Search")
@@ -55,19 +55,19 @@ func (_m *SaleService) Search(ctx context.Context, status string) ([]entity.Sale
 
 	var r0 []entity.Sale
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) ([]entity.Sale, error)); ok {
-		return rf(ctx, status)
+	if rf, ok := ret.Get(0).(func(context.Context) ([]entity.Sale, error)); ok {
+		return rf(ctx)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) []entity.Sale); ok {
-		r0 = rf(ctx, status)
+	if rf, ok := ret.Get(0).(func(context.Context) []entity.Sale); ok {
+		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]entity.Sale)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
-		r1 = rf(ctx, status)
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
 	} else {
 		r1 = ret.Error(1)
 	}
