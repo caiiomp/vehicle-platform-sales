@@ -10,7 +10,7 @@ import (
 )
 
 type VehiclePlatformPaymentsHttpClient interface {
-	GeneratePayment(ctx context.Context, amount float64, status string) (string, error)
+	GeneratePayment(ctx context.Context, amount float64) (string, error)
 }
 
 type vehiclePlatformPaymentsHttpClient struct {
@@ -27,14 +27,13 @@ func NewVehiclePlatformSalesHttpClient(client *http.Client, vehiclePlatformPayme
 	}
 }
 
-func (ref *vehiclePlatformPaymentsHttpClient) GeneratePayment(ctx context.Context, amount float64, status string) (string, error) {
+func (ref *vehiclePlatformPaymentsHttpClient) GeneratePayment(ctx context.Context, amount float64) (string, error) {
 	url := ref.vehiclePlatformPaymentsHost + "/payments"
 	webhookUrl := ref.vehiclePlatformSalesHost + "/sales/webhook"
 
 	payment := createPaymentRequest{
 		WebhookUrl: webhookUrl,
 		Amount:     amount,
-		Status:     status,
 	}
 
 	data, err := json.Marshal(payment)
