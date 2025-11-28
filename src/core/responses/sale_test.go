@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/caiiomp/vehicle-platform-sales/src/core/domain/entity"
+	valueobjects "github.com/caiiomp/vehicle-platform-sales/src/core/domain/valueObjects"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -14,7 +15,7 @@ func TestSaleFromDomain(t *testing.T) {
 	entityID := primitive.NewObjectID().Hex()
 	documentNumber := primitive.NewObjectID().Hex()
 	paymentID := uuid.NewString()
-	status := "APPROVED"
+	status := valueobjects.SaleStatusTypeApproved
 
 	now := time.Now()
 
@@ -35,7 +36,7 @@ func TestSaleFromDomain(t *testing.T) {
 		Price:               80000,
 		SoldAt:              &now,
 		PaymentID:           paymentID,
-		Status:              status,
+		Status:              status.String(),
 	}
 
 	actual := SaleFromDomain(sale)

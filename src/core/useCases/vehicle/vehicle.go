@@ -6,6 +6,7 @@ import (
 
 	interfaces "github.com/caiiomp/vehicle-platform-sales/src/core/_interfaces"
 	"github.com/caiiomp/vehicle-platform-sales/src/core/domain/entity"
+	valueobjects "github.com/caiiomp/vehicle-platform-sales/src/core/domain/valueObjects"
 )
 
 type vehicleService struct {
@@ -70,7 +71,7 @@ func (ref *vehicleService) Buy(ctx context.Context, entityID, buyerDocumentNumbe
 		return nil, errors.New("vehicle already sold")
 	}
 
-	paymentID, err := ref.vehiclePlatformPaymentsAdapter.GeneratePayment(ctx, vehicle.Price, "APPROVED")
+	paymentID, err := ref.vehiclePlatformPaymentsAdapter.GeneratePayment(ctx, vehicle.Price, valueobjects.SaleStatusTypeApproved.String())
 	if err != nil {
 		return nil, err
 	}
@@ -80,6 +81,7 @@ func (ref *vehicleService) Buy(ctx context.Context, entityID, buyerDocumentNumbe
 		PaymentID:           paymentID,
 		BuyerDocumentNumber: buyerDocumentNumber,
 		Price:               vehicle.Price,
+		Status:              valueobjects.SaleStatusTypePending,
 	}
 
 	_, err = ref.saleRepository.Create(ctx, sale)

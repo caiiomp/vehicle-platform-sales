@@ -1,6 +1,10 @@
 package entity
 
-import "time"
+import (
+	"time"
+
+	valueobjects "github.com/caiiomp/vehicle-platform-sales/src/core/domain/valueObjects"
+)
 
 type Sale struct {
 	ID                  int
@@ -8,7 +12,7 @@ type Sale struct {
 	PaymentID           string
 	BuyerDocumentNumber string
 	Price               float64
-	Status              string
+	Status              valueobjects.SaleStatusType
 	SoldAt              *time.Time
 	CreatedAt           time.Time
 	UpdatedAt           time.Time
