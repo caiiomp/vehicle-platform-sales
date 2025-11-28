@@ -13,18 +13,19 @@ import (
 func TestGeneratePayment(t *testing.T) {
 	ctx := context.TODO()
 	amount := float64(50000)
+	status := "APPROVED"
 	paymentID := uuid.NewString()
 
 	httpClientMocked := mocks.NewVehiclePlatformPaymentsHttpClient(t)
 
-	httpClientMocked.On("GeneratePayment", ctx, amount).
+	httpClientMocked.On("GeneratePayment", ctx, amount, status).
 		Return(paymentID, nil)
 
 	adapter := NewVehiclePlatformPaymentsAdapter(httpClientMocked)
 
 	expected := paymentID
 
-	actual, err := adapter.GeneratePayment(ctx, amount)
+	actual, err := adapter.GeneratePayment(ctx, amount, status)
 
 	assert.Equal(t, expected, actual)
 	assert.Nil(t, err)

@@ -47,24 +47,24 @@ func (_m *SaleRepository) Create(ctx context.Context, sale entity.Sale) (*entity
 	return r0, r1
 }
 
-// SearchByEntityID provides a mock function with given fields: ctx, entityID
-func (_m *SaleRepository) SearchByEntityID(ctx context.Context, entityID string) ([]entity.Sale, error) {
+// GetByEntityID provides a mock function with given fields: ctx, entityID
+func (_m *SaleRepository) GetByEntityID(ctx context.Context, entityID string) (*entity.Sale, error) {
 	ret := _m.Called(ctx, entityID)
 
 	if len(ret) == 0 {
-		panic("no return value specified for SearchByEntityID")
+		panic("no return value specified for GetByEntityID")
 	}
 
-	var r0 []entity.Sale
+	var r0 *entity.Sale
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) ([]entity.Sale, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*entity.Sale, error)); ok {
 		return rf(ctx, entityID)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) []entity.Sale); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) *entity.Sale); ok {
 		r0 = rf(ctx, entityID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]entity.Sale)
+			r0 = ret.Get(0).(*entity.Sale)
 		}
 	}
 
@@ -77,12 +77,12 @@ func (_m *SaleRepository) SearchByEntityID(ctx context.Context, entityID string)
 	return r0, r1
 }
 
-// SearchByStatus provides a mock function with given fields: ctx, status
-func (_m *SaleRepository) SearchByStatus(ctx context.Context, status string) ([]entity.Sale, error) {
+// Search provides a mock function with given fields: ctx, status
+func (_m *SaleRepository) Search(ctx context.Context, status string) ([]entity.Sale, error) {
 	ret := _m.Called(ctx, status)
 
 	if len(ret) == 0 {
-		panic("no return value specified for SearchByStatus")
+		panic("no return value specified for Search")
 	}
 
 	var r0 []entity.Sale
@@ -108,7 +108,7 @@ func (_m *SaleRepository) SearchByStatus(ctx context.Context, status string) ([]
 }
 
 // UpdateStatusByPaymentID provides a mock function with given fields: ctx, paymentID, status, soldDate
-func (_m *SaleRepository) UpdateStatusByPaymentID(ctx context.Context, paymentID string, status string, soldDate *time.Time) (*entity.Sale, error) {
+func (_m *SaleRepository) UpdateStatusByPaymentID(ctx context.Context, paymentID string, status string, soldDate time.Time) (*entity.Sale, error) {
 	ret := _m.Called(ctx, paymentID, status, soldDate)
 
 	if len(ret) == 0 {
@@ -117,10 +117,10 @@ func (_m *SaleRepository) UpdateStatusByPaymentID(ctx context.Context, paymentID
 
 	var r0 *entity.Sale
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, *time.Time) (*entity.Sale, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, time.Time) (*entity.Sale, error)); ok {
 		return rf(ctx, paymentID, status, soldDate)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, *time.Time) *entity.Sale); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, time.Time) *entity.Sale); ok {
 		r0 = rf(ctx, paymentID, status, soldDate)
 	} else {
 		if ret.Get(0) != nil {
@@ -128,7 +128,7 @@ func (_m *SaleRepository) UpdateStatusByPaymentID(ctx context.Context, paymentID
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string, string, *time.Time) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, string, string, time.Time) error); ok {
 		r1 = rf(ctx, paymentID, status, soldDate)
 	} else {
 		r1 = ret.Error(1)

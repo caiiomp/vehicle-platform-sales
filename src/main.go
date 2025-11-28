@@ -138,7 +138,6 @@ func getDb(ctx context.Context, environment, instanceConnectionName, host, port,
 	return db, nil
 }
 
-func timeGenerator() *time.Time {
-	now := time.Now().UTC()
-	return &now
+func timeGenerator() time.Time {
+	return time.Now().UTC()
 }

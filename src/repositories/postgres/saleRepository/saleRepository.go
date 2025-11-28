@@ -37,29 +37,22 @@ func (ref *saleRepository) Create(ctx context.Context, sale entity.Sale) (*entit
 	return created.ToDomain(), nil
 }
 
-func (ref *saleRepository) SearchByEntityID(ctx context.Context, entityID string) ([]entity.Sale, error) {
-	rows, err := ref.db.QueryContext(ctx, getSaleByEntityID, entityID)
+func (ref *saleRepository) GetByEntityID(ctx context.Context, entityID string) (*entity.Sale, error) {
+	row := ref.db.QueryRowContext(ctx, getSaleByEntityID, entityID)
+
+	var sale model.Sale
+	err := row.Scan(&sale.ID, &sale.EntityID, &sale.PaymentID, &sale.BuyerDocumentNumber, &sale.Price, &sale.Status, &sale.SoldAt, &sale.CreatedAt, &sale.UpdatedAt)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		return nil, err
 	}
-	defer rows.Close()
 
-	sales := make([]entity.Sale, 0)
-
-	for rows.Next() {
-		var record model.Sale
-		err = rows.Scan(&record.ID, &record.EntityID, &record.PaymentID, &record.BuyerDocumentNumber, &record.Price, &record.Status, &record.SoldAt, &record.CreatedAt, &record.UpdatedAt)
-		if err != nil {
-			return nil, err
-		}
-
-		sales = append(sales, *record.ToDomain())
-	}
-
-	return sales, nil
+	return sale.ToDomain(), nil
 }
 
-func (ref *saleRepository) SearchByStatus(ctx context.Context, status string) ([]entity.Sale, error) {
+func (ref *saleRepository) Search(ctx context.Context, status string) ([]entity.Sale, error) {
 	var (
 		rows *sql.Rows
 		err  error
@@ -92,7 +85,7 @@ func (ref *saleRepository) SearchByStatus(ctx context.Context, status string) ([
 	return sales, nil
 }
 
-func (ref *saleRepository) UpdateStatusByPaymentID(ctx context.Context, paymentID, status string, soldDate *time.Time) (*entity.Sale, error) {
+func (ref *saleRepository) UpdateStatusByPaymentID(ctx context.Context, paymentID, status string, soldDate time.Time) (*entity.Sale, error) {
 	row := ref.db.QueryRowContext(ctx, updateSaleStatusByPaymentID, paymentID, status, soldDate)
 
 	var sale model.Sale
