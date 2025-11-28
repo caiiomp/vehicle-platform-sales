@@ -13,9 +13,9 @@ type VehiclePlatformPaymentsAdapter struct {
 	mock.Mock
 }
 
-// GeneratePayment provides a mock function with given fields: ctx, amount, status
-func (_m *VehiclePlatformPaymentsAdapter) GeneratePayment(ctx context.Context, amount float64, status string) (string, error) {
-	ret := _m.Called(ctx, amount, status)
+// GeneratePayment provides a mock function with given fields: ctx, amount
+func (_m *VehiclePlatformPaymentsAdapter) GeneratePayment(ctx context.Context, amount float64) (string, error) {
+	ret := _m.Called(ctx, amount)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GeneratePayment")
@@ -23,17 +23,17 @@ func (_m *VehiclePlatformPaymentsAdapter) GeneratePayment(ctx context.Context, a
 
 	var r0 string
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, float64, string) (string, error)); ok {
-		return rf(ctx, amount, status)
+	if rf, ok := ret.Get(0).(func(context.Context, float64) (string, error)); ok {
+		return rf(ctx, amount)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, float64, string) string); ok {
-		r0 = rf(ctx, amount, status)
+	if rf, ok := ret.Get(0).(func(context.Context, float64) string); ok {
+		r0 = rf(ctx, amount)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, float64, string) error); ok {
-		r1 = rf(ctx, amount, status)
+	if rf, ok := ret.Get(1).(func(context.Context, float64) error); ok {
+		r1 = rf(ctx, amount)
 	} else {
 		r1 = ret.Error(1)
 	}

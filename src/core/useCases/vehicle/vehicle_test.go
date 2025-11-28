@@ -329,7 +329,7 @@ func TestBuy(t *testing.T) {
 		saleRepositoryMocked.On("GetByEntityID", ctx, entityID).
 			Return(nil, nil)
 
-		vehiclePlatformPaymentsAdapterMocked.On("GeneratePayment", ctx, vehicle.Price, "APPROVED").
+		vehiclePlatformPaymentsAdapterMocked.On("GeneratePayment", ctx, vehicle.Price).
 			Return("", unexpectedError)
 
 		service := NewVehicleService(vehicleRepositoryMocked, saleRepositoryMocked, vehiclePlatformPaymentsAdapterMocked)
@@ -354,7 +354,7 @@ func TestBuy(t *testing.T) {
 		saleRepositoryMocked.On("GetByEntityID", ctx, entityID).
 			Return(nil, nil)
 
-		vehiclePlatformPaymentsAdapterMocked.On("GeneratePayment", ctx, vehicle.Price, "APPROVED").
+		vehiclePlatformPaymentsAdapterMocked.On("GeneratePayment", ctx, vehicle.Price).
 			Return(paymentID, nil)
 
 		saleRepositoryMocked.On("Create", ctx, mock.AnythingOfType("entity.Sale")).
@@ -381,7 +381,7 @@ func TestBuy(t *testing.T) {
 		saleRepositoryMocked.On("GetByEntityID", ctx, entityID).
 			Return(nil, nil)
 
-		vehiclePlatformPaymentsAdapterMocked.On("GeneratePayment", ctx, vehicle.Price, "APPROVED").
+		vehiclePlatformPaymentsAdapterMocked.On("GeneratePayment", ctx, vehicle.Price).
 			Return(paymentID, nil)
 
 		saleRepositoryMocked.On("Create", ctx, mock.AnythingOfType("entity.Sale")).

@@ -7,6 +7,7 @@ import (
 
 	interfaces "github.com/caiiomp/vehicle-platform-sales/src/core/_interfaces"
 	"github.com/caiiomp/vehicle-platform-sales/src/core/responses"
+	"github.com/caiiomp/vehicle-platform-sales/src/presentation/constants"
 )
 
 type saleApi struct {
@@ -64,9 +65,10 @@ func (ref *saleApi) search(ctx *gin.Context) {
 // @Tags Sale
 // @Accept json
 // @Produce json
-// @Param user body saleApi.saleWebhookRequest true "Body"
+// @Param expected_webhook body saleApi.saleWebhookRequest true "Body"
 // @Success 204
 // @Failure 400 {object} responses.ErrorResponse
+// @Failure 404 {object} responses.ErrorResponse
 // @Failure 500 {object} responses.ErrorResponse
 // @Router /sales/webhook [post]
 func (ref *saleApi) webhook(ctx *gin.Context) {
@@ -78,10 +80,17 @@ func (ref *saleApi) webhook(ctx *gin.Context) {
 		return
 	}
 
-	_, err := ref.saleService.UpdateStatusByPaymentID(ctx, request.PaymentID, request.Status)
+	sale, err := ref.saleService.UpdateStatusByPaymentID(ctx, request.PaymentID, request.Status)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, responses.ErrorResponse{
 			Error: err.Error(),
+		})
+		return
+	}
+
+	if sale == nil {
+		ctx.JSON(http.StatusNotFound, responses.ErrorResponse{
+			Error: constants.SaleDoesNotExist,
 		})
 		return
 	}

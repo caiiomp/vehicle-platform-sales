@@ -70,7 +70,7 @@ func (ref *vehicleService) Buy(ctx context.Context, entityID, buyerDocumentNumbe
 		return nil, errors.New("vehicle already sold")
 	}
 
-	paymentID, err := ref.vehiclePlatformPaymentsAdapter.GeneratePayment(ctx, vehicle.Price, "APPROVED")
+	paymentID, err := ref.vehiclePlatformPaymentsAdapter.GeneratePayment(ctx, vehicle.Price)
 	if err != nil {
 		return nil, err
 	}
