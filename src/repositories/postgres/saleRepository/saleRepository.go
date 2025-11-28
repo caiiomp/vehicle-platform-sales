@@ -85,7 +85,7 @@ func (ref *saleRepository) Search(ctx context.Context, status string) ([]entity.
 	return sales, nil
 }
 
-func (ref *saleRepository) UpdateStatusByPaymentID(ctx context.Context, paymentID, status string, soldDate time.Time) (*entity.Sale, error) {
+func (ref *saleRepository) UpdateStatusByPaymentID(ctx context.Context, paymentID, status string, soldDate *time.Time) (*entity.Sale, error) {
 	row := ref.db.QueryRowContext(ctx, updateSaleStatusByPaymentID, paymentID, status, soldDate)
 
 	var sale model.Sale
