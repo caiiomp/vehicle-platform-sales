@@ -128,7 +128,7 @@ paths:
       parameters:
       - description: Body
         in: body
-        name: user
+        name: expected_webhook
         required: true
         schema:
           $ref: '#/definitions/saleApi.saleWebhookRequest'
@@ -139,6 +139,10 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/responses.ErrorResponse'
         "500":
@@ -216,6 +220,12 @@ paths:
       consumes:
       - application/json
       description: Get vehicle
+      parameters:
+      - description: Entity ID
+        in: path
+        name: entity_id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -243,6 +253,11 @@ paths:
       - application/json
       description: Update vehicle
       parameters:
+      - description: Entity ID
+        in: path
+        name: entity_id
+        required: true
+        type: string
       - description: Body
         in: body
         name: vehicle
@@ -276,6 +291,11 @@ paths:
       - application/json
       description: Buy vehicle
       parameters:
+      - description: Entity ID
+        in: path
+        name: entity_id
+        required: true
+        type: string
       - description: Body
         in: body
         name: buyer_document_number
