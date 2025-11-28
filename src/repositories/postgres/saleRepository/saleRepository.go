@@ -53,7 +53,7 @@ func (ref *saleRepository) GetByEntityID(ctx context.Context, entityID string) (
 }
 
 func (ref *saleRepository) Search(ctx context.Context) ([]entity.Sale, error) {
-	rows, err := ref.db.QueryContext(ctx, searchSalesByStatus)
+	rows, err := ref.db.QueryContext(ctx, searchAllSales)
 	if err != nil {
 		return nil, err
 	}
