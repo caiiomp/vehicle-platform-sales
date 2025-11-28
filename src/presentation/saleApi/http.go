@@ -28,11 +28,20 @@ func RegisterSaleRoutes(app *gin.Engine, saleService interfaces.SaleService) {
 // @Tags Sale
 // @Accept json
 // @Produce json
+// @Param status query string false "Filter sales by status"
 // @Success 200 {array} responses.Sale
 // @Failure 500 {object} responses.ErrorResponse
 // @Router /sales [get]
 func (ref *saleApi) search(ctx *gin.Context) {
-	sales, err := ref.saleService.Search(ctx)
+	var query saleQuery
+	if err := ctx.ShouldBindQuery(&query); err != nil {
+		ctx.JSON(http.StatusBadRequest, responses.ErrorResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+
+	sales, err := ref.saleService.Search(ctx, query.Status)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, responses.ErrorResponse{
 			Error: err.Error(),

@@ -24,5 +24,7 @@ const (
 		RETURNING *;
 	`
 
-	searchSales = "SELECT * FROM sales WHERE status = 'APPROVED' and sold_at IS NOT NULL"
+	searchAllSales = "SELECT * FROM sales;"
+
+	searchSalesByStatus = "SELECT * FROM sales WHERE status = $1;"
 )

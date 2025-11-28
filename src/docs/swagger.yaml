@@ -9,7 +9,7 @@ definitions:
       buyer_document_number:
         type: string
       id:
-        type: string
+        type: integer
       payment_id:
         type: string
       price:
@@ -30,7 +30,7 @@ definitions:
       created_at:
         type: string
       id:
-        type: string
+        type: integer
       model:
         type: string
       price:
@@ -99,6 +99,11 @@ paths:
       consumes:
       - application/json
       description: List sales
+      parameters:
+      - description: Filter sales by status
+        in: query
+        name: status
+        type: string
       produces:
       - application/json
       responses:
@@ -176,11 +181,11 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a vehicle
+      description: Create vehicle
       parameters:
       - description: Body
         in: body
-        name: user
+        name: vehicle
         required: true
         schema:
           $ref: '#/definitions/vehicleApi.createVehicleRequest'
@@ -191,12 +196,12 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/responses.Vehicle'
-        "204":
-          description: No Content
-          schema:
-            $ref: '#/definitions/responses.ErrorResponse'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/responses.ErrorResponse'
         "500":
@@ -206,11 +211,11 @@ paths:
       summary: Create Vehicle
       tags:
       - Vehicle
-  /vehicles/{vehicle_id}:
+  /vehicles/{entity_id}:
     get:
       consumes:
       - application/json
-      description: Get a vehicle
+      description: Get vehicle
       produces:
       - application/json
       responses:
@@ -218,12 +223,12 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/responses.Vehicle'
-        "204":
-          description: No Content
-          schema:
-            $ref: '#/definitions/responses.ErrorResponse'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/responses.ErrorResponse'
         "500":
@@ -236,11 +241,11 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Update a vehicle
+      description: Update vehicle
       parameters:
       - description: Body
         in: body
-        name: user
+        name: vehicle
         schema:
           $ref: '#/definitions/vehicleApi.updateVehicleRequest'
       produces:
@@ -250,12 +255,12 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/responses.Vehicle'
-        "204":
-          description: No Content
-          schema:
-            $ref: '#/definitions/responses.ErrorResponse'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/responses.ErrorResponse'
         "500":
@@ -265,15 +270,15 @@ paths:
       summary: Update Vehicle
       tags:
       - Vehicle
-  /vehicles/{vehicle_id}/buy:
+  /vehicles/{entity_id}/buy:
     post:
       consumes:
       - application/json
-      description: Buy a vehicle
+      description: Buy vehicle
       parameters:
       - description: Body
         in: body
-        name: user
+        name: buyer_document_number
         required: true
         schema:
           $ref: '#/definitions/vehicleApi.buyVehicleRequest'
@@ -284,12 +289,12 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/responses.Vehicle'
-        "204":
-          description: No Content
-          schema:
-            $ref: '#/definitions/responses.ErrorResponse'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/responses.ErrorResponse'
         "500":

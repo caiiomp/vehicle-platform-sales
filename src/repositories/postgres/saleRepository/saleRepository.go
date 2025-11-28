@@ -52,8 +52,19 @@ func (ref *saleRepository) GetByEntityID(ctx context.Context, entityID string) (
 	return sale.ToDomain(), nil
 }
 
-func (ref *saleRepository) Search(ctx context.Context) ([]entity.Sale, error) {
-	rows, err := ref.db.QueryContext(ctx, searchSales)
+func (ref *saleRepository) Search(ctx context.Context, status string) ([]entity.Sale, error) {
+	var (
+		rows *sql.Rows
+		err  error
+	)
+
+	switch {
+	case status != "":
+		rows, err = ref.db.QueryContext(ctx, searchSalesByStatus, status)
+	default:
+		rows, err = ref.db.QueryContext(ctx, searchAllSales)
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +74,7 @@ func (ref *saleRepository) Search(ctx context.Context) ([]entity.Sale, error) {
 
 	for rows.Next() {
 		var record model.Sale
-		err := rows.Scan(&record.ID, &record.EntityID, &record.PaymentID, &record.BuyerDocumentNumber, &record.Price, &record.Status, &record.SoldAt, &record.CreatedAt, &record.UpdatedAt)
+		err = rows.Scan(&record.ID, &record.EntityID, &record.PaymentID, &record.BuyerDocumentNumber, &record.Price, &record.Status, &record.SoldAt, &record.CreatedAt, &record.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}

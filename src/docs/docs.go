@@ -28,6 +28,14 @@ const docTemplate = `{
                     "Sale"
                 ],
                 "summary": "List sales",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter sales by status",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -136,7 +144,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create a vehicle",
+                "description": "Create vehicle",
                 "consumes": [
                     "application/json"
                 ],
@@ -150,7 +158,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Body",
-                        "name": "user",
+                        "name": "vehicle",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -165,14 +173,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/responses.Vehicle"
                         }
                     },
-                    "204": {
-                        "description": "No Content",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/responses.ErrorResponse"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/responses.ErrorResponse"
                         }
@@ -186,9 +194,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/vehicles/{vehicle_id}": {
+        "/vehicles/{entity_id}": {
             "get": {
-                "description": "Get a vehicle",
+                "description": "Get vehicle",
                 "consumes": [
                     "application/json"
                 ],
@@ -206,14 +214,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/responses.Vehicle"
                         }
                     },
-                    "204": {
-                        "description": "No Content",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/responses.ErrorResponse"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/responses.ErrorResponse"
                         }
@@ -227,7 +235,7 @@ const docTemplate = `{
                 }
             },
             "patch": {
-                "description": "Update a vehicle",
+                "description": "Update vehicle",
                 "consumes": [
                     "application/json"
                 ],
@@ -241,7 +249,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Body",
-                        "name": "user",
+                        "name": "vehicle",
                         "in": "body",
                         "schema": {
                             "$ref": "#/definitions/vehicleApi.updateVehicleRequest"
@@ -255,14 +263,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/responses.Vehicle"
                         }
                     },
-                    "204": {
-                        "description": "No Content",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/responses.ErrorResponse"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/responses.ErrorResponse"
                         }
@@ -276,9 +284,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/vehicles/{vehicle_id}/buy": {
+        "/vehicles/{entity_id}/buy": {
             "post": {
-                "description": "Buy a vehicle",
+                "description": "Buy vehicle",
                 "consumes": [
                     "application/json"
                 ],
@@ -292,7 +300,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Body",
-                        "name": "user",
+                        "name": "buyer_document_number",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -307,14 +315,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/responses.Vehicle"
                         }
                     },
-                    "204": {
-                        "description": "No Content",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/responses.ErrorResponse"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/responses.ErrorResponse"
                         }
@@ -345,7 +353,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "payment_id": {
                     "type": "string"
@@ -377,7 +385,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "model": {
                     "type": "string"
