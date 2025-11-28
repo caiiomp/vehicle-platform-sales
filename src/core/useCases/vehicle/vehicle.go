@@ -66,7 +66,7 @@ func (ref *vehicleService) Buy(ctx context.Context, entityID, buyerDocumentNumbe
 		return nil, err
 	}
 
-	if existingSale != nil {
+	if existingSale != nil && existingSale.Status == "APPROVED" {
 		return nil, errors.New("vehicle already sold")
 	}
 
