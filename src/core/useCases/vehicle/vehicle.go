@@ -39,6 +39,15 @@ func (ref *vehicleService) Search(ctx context.Context, isSold *bool) ([]entity.V
 }
 
 func (ref *vehicleService) Update(ctx context.Context, id string, vehicle entity.Vehicle) (*entity.Vehicle, error) {
+	current, err := ref.vehicleRepository.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if current == nil {
+		return nil, nil
+	}
+
 	return ref.vehicleRepository.Update(ctx, id, vehicle)
 }
 
@@ -49,7 +58,7 @@ func (ref *vehicleService) Buy(ctx context.Context, entityID, buyerDocumentNumbe
 	}
 
 	if vehicle == nil {
-		return nil, errors.New("vehicle does not exist")
+		return nil, nil
 	}
 
 	existingSale, err := ref.saleRepository.GetByEntityID(ctx, entityID)

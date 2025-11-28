@@ -131,8 +131,43 @@ func TestUpdate(t *testing.T) {
 	vehicleID := primitive.NewObjectID().Hex()
 	unexpectedError := errors.New("unexpected error")
 
-	t.Run("should not update vehicle when failed to update", func(t *testing.T) {
+	t.Run("should not update vehicle when failed to get by id", func(t *testing.T) {
 		vehicleRepositoryMocked := mocks.NewVehicleRepository(t)
+
+		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
+			Return(nil, unexpectedError)
+
+		service := NewVehicleService(vehicleRepositoryMocked, nil, nil)
+
+		actual, err := service.Update(ctx, vehicleID, entity.Vehicle{})
+
+		assert.Nil(t, actual)
+		assert.Equal(t, unexpectedError, err)
+		vehicleRepositoryMocked.AssertNumberOfCalls(t, "Update", 0)
+	})
+
+	t.Run("should not update vehicle when vehicle does not exist", func(t *testing.T) {
+		vehicleRepositoryMocked := mocks.NewVehicleRepository(t)
+
+		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
+			Return(nil, nil)
+
+		service := NewVehicleService(vehicleRepositoryMocked, nil, nil)
+
+		actual, err := service.Update(ctx, vehicleID, entity.Vehicle{})
+
+		assert.Nil(t, actual)
+		assert.Nil(t, err)
+		vehicleRepositoryMocked.AssertNumberOfCalls(t, "Update", 0)
+	})
+
+	t.Run("should not update vehicle when failed to update", func(t *testing.T) {
+		vehicle := entity.Vehicle{}
+
+		vehicleRepositoryMocked := mocks.NewVehicleRepository(t)
+
+		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
+			Return(&vehicle, nil)
 
 		vehicleRepositoryMocked.On("Update", ctx, vehicleID, entity.Vehicle{}).
 			Return(nil, unexpectedError)
@@ -146,7 +181,12 @@ func TestUpdate(t *testing.T) {
 	})
 
 	t.Run("should update vehicle successfully", func(t *testing.T) {
+		vehicle := entity.Vehicle{}
+
 		vehicleRepositoryMocked := mocks.NewVehicleRepository(t)
+
+		vehicleRepositoryMocked.On("GetByID", ctx, vehicleID).
+			Return(&vehicle, nil)
 
 		vehicleRepositoryMocked.On("Update", ctx, vehicleID, entity.Vehicle{}).
 			Return(&entity.Vehicle{}, nil)
@@ -198,7 +238,7 @@ func TestBuy(t *testing.T) {
 		actual, err := service.Buy(ctx, entityID, buyerDocumentNumber)
 
 		assert.Nil(t, actual)
-		assert.ErrorContains(t, err, "vehicle does not exist")
+		assert.Nil(t, err)
 		saleRepositoryMocked.AssertNumberOfCalls(t, "Create", 0)
 		vehiclePlatformPaymentsAdapterMocked.AssertNumberOfCalls(t, "GeneratePayment", 0)
 	})

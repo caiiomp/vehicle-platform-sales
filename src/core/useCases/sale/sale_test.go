@@ -75,12 +75,12 @@ func TestSearch(t *testing.T) {
 	t.Run("should not search sales when failed to search", func(t *testing.T) {
 		saleRepositoryMocked := mocks.NewSaleRepository(t)
 
-		saleRepositoryMocked.On("Search", ctx).
+		saleRepositoryMocked.On("Search", ctx, "APPROVED").
 			Return(nil, unexpectedError)
 
 		service := NewSaleService(saleRepositoryMocked, time.Now)
 
-		actual, err := service.Search(ctx)
+		actual, err := service.Search(ctx, "APPROVED")
 
 		assert.Nil(t, actual)
 		assert.Equal(t, unexpectedError, err)
@@ -98,12 +98,12 @@ func TestSearch(t *testing.T) {
 			},
 		}
 
-		saleRepositoryMocked.On("Search", ctx).
+		saleRepositoryMocked.On("Search", ctx, "APPROVED").
 			Return(sales, nil)
 
 		service := NewSaleService(saleRepositoryMocked, time.Now)
 
-		actual, err := service.Search(ctx)
+		actual, err := service.Search(ctx, "APPROVED")
 
 		assert.NotNil(t, actual)
 		assert.Nil(t, err)

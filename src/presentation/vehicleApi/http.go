@@ -7,6 +7,7 @@ import (
 
 	interfaces "github.com/caiiomp/vehicle-platform-sales/src/core/_interfaces"
 	"github.com/caiiomp/vehicle-platform-sales/src/core/responses"
+	"github.com/caiiomp/vehicle-platform-sales/src/presentation/constants"
 )
 
 type vehicleApi struct {
@@ -27,14 +28,14 @@ func RegisterVehicleRoutes(app *gin.Engine, vehicleService interfaces.VehicleSer
 
 // Create godoc
 // @Summary Create Vehicle
-// @Description Create a vehicle
+// @Description Create vehicle
 // @Tags Vehicle
 // @Accept json
 // @Produce json
-// @Param user body vehicleApi.createVehicleRequest true "Body"
+// @Param vehicle body vehicleApi.createVehicleRequest true "Body"
 // @Success 201 {object} responses.Vehicle
-// @Failure 204 {object} responses.ErrorResponse
 // @Failure 400 {object} responses.ErrorResponse
+// @Failure 404 {object} responses.ErrorResponse
 // @Failure 500 {object} responses.ErrorResponse
 // @Router /vehicles [post]
 func (ref *vehicleApi) create(ctx *gin.Context) {
@@ -55,7 +56,9 @@ func (ref *vehicleApi) create(ctx *gin.Context) {
 	}
 
 	if vehicle == nil {
-		ctx.JSON(http.StatusNoContent, nil)
+		ctx.JSON(http.StatusNotFound, responses.ErrorResponse{
+			Error: constants.VehicleDoesNotExist,
+		})
 		return
 	}
 
@@ -102,13 +105,13 @@ func (ref *vehicleApi) search(ctx *gin.Context) {
 
 // Create godoc
 // @Summary Get Vehicle
-// @Description Get a vehicle
+// @Description Get vehicle
 // @Tags Vehicle
 // @Accept json
 // @Produce json
 // @Success 200 {object} responses.Vehicle
-// @Failure 204 {object} responses.ErrorResponse
 // @Failure 400 {object} responses.ErrorResponse
+// @Failure 404 {object} responses.ErrorResponse
 // @Failure 500 {object} responses.ErrorResponse
 // @Router /vehicles/{entity_id} [get]
 func (ref *vehicleApi) get(ctx *gin.Context) {
@@ -129,7 +132,9 @@ func (ref *vehicleApi) get(ctx *gin.Context) {
 	}
 
 	if vehicle == nil {
-		ctx.JSON(http.StatusNoContent, nil)
+		ctx.JSON(http.StatusNotFound, responses.ErrorResponse{
+			Error: constants.VehicleDoesNotExist,
+		})
 		return
 	}
 
@@ -139,14 +144,14 @@ func (ref *vehicleApi) get(ctx *gin.Context) {
 
 // Create godoc
 // @Summary Update Vehicle
-// @Description Update a vehicle
+// @Description Update vehicle
 // @Tags Vehicle
 // @Accept json
 // @Produce json
-// @Param user body vehicleApi.updateVehicleRequest false "Body"
+// @Param vehicle body vehicleApi.updateVehicleRequest false "Body"
 // @Success 200 {object} responses.Vehicle
-// @Failure 204 {object} responses.ErrorResponse
 // @Failure 400 {object} responses.ErrorResponse
+// @Failure 404 {object} responses.ErrorResponse
 // @Failure 500 {object} responses.ErrorResponse
 // @Router /vehicles/{entity_id} [patch]
 func (ref *vehicleApi) update(ctx *gin.Context) {
@@ -175,7 +180,9 @@ func (ref *vehicleApi) update(ctx *gin.Context) {
 	}
 
 	if vehicle == nil {
-		ctx.JSON(http.StatusNoContent, nil)
+		ctx.JSON(http.StatusNotFound, responses.ErrorResponse{
+			Error: constants.VehicleDoesNotExist,
+		})
 		return
 	}
 
@@ -185,14 +192,14 @@ func (ref *vehicleApi) update(ctx *gin.Context) {
 
 // Create godoc
 // @Summary Buy Vehicle
-// @Description Buy a vehicle
+// @Description Buy vehicle
 // @Tags Vehicle
 // @Accept json
 // @Produce json
-// @Param user body vehicleApi.buyVehicleRequest true "Body"
+// @Param buyer_document_number body vehicleApi.buyVehicleRequest true "Body"
 // @Success 200 {object} responses.Vehicle
-// @Failure 204 {object} responses.ErrorResponse
 // @Failure 400 {object} responses.ErrorResponse
+// @Failure 404 {object} responses.ErrorResponse
 // @Failure 500 {object} responses.ErrorResponse
 // @Router /vehicles/{entity_id}/buy [post]
 func (ref *vehicleApi) buy(ctx *gin.Context) {
@@ -214,14 +221,21 @@ func (ref *vehicleApi) buy(ctx *gin.Context) {
 
 	vehicle, err := ref.vehicleService.Buy(ctx, uri.EntityID, body.BuyerDocumentNumber)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, responses.ErrorResponse{
+		statusCode := http.StatusInternalServerError
+		if err.Error() == constants.VehicleAlreadySold {
+			statusCode = http.StatusBadRequest
+		}
+
+		ctx.JSON(statusCode, responses.ErrorResponse{
 			Error: err.Error(),
 		})
 		return
 	}
 
 	if vehicle == nil {
-		ctx.JSON(http.StatusNoContent, nil)
+		ctx.JSON(http.StatusNotFound, responses.ErrorResponse{
+			Error: constants.VehicleDoesNotExist,
+		})
 		return
 	}
 
