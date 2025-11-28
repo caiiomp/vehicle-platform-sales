@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
 
 CREATE TABLE IF NOT EXISTS sales (
     id SERIAL PRIMARY KEY,
-    entity_id TEXT UNIQUE,
+    entity_id TEXT,
     payment_id TEXT,
     buyer_document_number TEXT NOT NULL,
     price DECIMAL(12,2) NOT NULL,

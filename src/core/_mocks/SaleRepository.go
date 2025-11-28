@@ -47,24 +47,24 @@ func (_m *SaleRepository) Create(ctx context.Context, sale entity.Sale) (*entity
 	return r0, r1
 }
 
-// GetByEntityID provides a mock function with given fields: ctx, entityID
-func (_m *SaleRepository) GetByEntityID(ctx context.Context, entityID string) (*entity.Sale, error) {
+// SearchByEntityID provides a mock function with given fields: ctx, entityID
+func (_m *SaleRepository) SearchByEntityID(ctx context.Context, entityID string) ([]entity.Sale, error) {
 	ret := _m.Called(ctx, entityID)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetByEntityID")
+		panic("no return value specified for SearchByEntityID")
 	}
 
-	var r0 *entity.Sale
+	var r0 []entity.Sale
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) (*entity.Sale, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) ([]entity.Sale, error)); ok {
 		return rf(ctx, entityID)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) *entity.Sale); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) []entity.Sale); ok {
 		r0 = rf(ctx, entityID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*entity.Sale)
+			r0 = ret.Get(0).([]entity.Sale)
 		}
 	}
 
@@ -77,12 +77,12 @@ func (_m *SaleRepository) GetByEntityID(ctx context.Context, entityID string) (*
 	return r0, r1
 }
 
-// Search provides a mock function with given fields: ctx, status
-func (_m *SaleRepository) Search(ctx context.Context, status string) ([]entity.Sale, error) {
+// SearchByStatus provides a mock function with given fields: ctx, status
+func (_m *SaleRepository) SearchByStatus(ctx context.Context, status string) ([]entity.Sale, error) {
 	ret := _m.Called(ctx, status)
 
 	if len(ret) == 0 {
-		panic("no return value specified for Search")
+		panic("no return value specified for SearchByStatus")
 	}
 
 	var r0 []entity.Sale

@@ -261,7 +261,7 @@ func TestBuy(t *testing.T) {
 		vehicleRepositoryMocked.On("GetByID", ctx, entityID).
 			Return(vehicle, nil)
 
-		saleRepositoryMocked.On("GetByEntityID", ctx, entityID).
+		saleRepositoryMocked.On("SearchByEntityID", ctx, entityID).
 			Return(nil, unexpectedError)
 
 		service := NewVehicleService(vehicleRepositoryMocked, saleRepositoryMocked, nil)
@@ -289,20 +289,22 @@ func TestBuy(t *testing.T) {
 			Price:    20000,
 		}
 
-		sale := &entity.Sale{
-			ID:                  1,
-			EntityID:            entityID,
-			PaymentID:           paymentID,
-			BuyerDocumentNumber: buyerDocumentNumber,
-			Price:               10000,
-			Status:              "APPROVED",
+		sales := []entity.Sale{
+			{
+				ID:                  1,
+				EntityID:            entityID,
+				PaymentID:           paymentID,
+				BuyerDocumentNumber: buyerDocumentNumber,
+				Price:               10000,
+				Status:              "APPROVED",
+			},
 		}
 
 		vehicleRepositoryMocked.On("GetByID", ctx, entityID).
 			Return(vehicle, nil)
 
-		saleRepositoryMocked.On("GetByEntityID", ctx, entityID).
-			Return(sale, nil)
+		saleRepositoryMocked.On("SearchByEntityID", ctx, entityID).
+			Return(sales, nil)
 
 		service := NewVehicleService(vehicleRepositoryMocked, saleRepositoryMocked, nil)
 
@@ -326,7 +328,7 @@ func TestBuy(t *testing.T) {
 		vehicleRepositoryMocked.On("GetByID", ctx, entityID).
 			Return(vehicle, nil)
 
-		saleRepositoryMocked.On("GetByEntityID", ctx, entityID).
+		saleRepositoryMocked.On("SearchByEntityID", ctx, entityID).
 			Return(nil, nil)
 
 		vehiclePlatformPaymentsAdapterMocked.On("GeneratePayment", ctx, vehicle.Price).
@@ -351,7 +353,7 @@ func TestBuy(t *testing.T) {
 		vehicleRepositoryMocked.On("GetByID", ctx, entityID).
 			Return(vehicle, nil)
 
-		saleRepositoryMocked.On("GetByEntityID", ctx, entityID).
+		saleRepositoryMocked.On("SearchByEntityID", ctx, entityID).
 			Return(nil, nil)
 
 		vehiclePlatformPaymentsAdapterMocked.On("GeneratePayment", ctx, vehicle.Price).
@@ -378,7 +380,7 @@ func TestBuy(t *testing.T) {
 		vehicleRepositoryMocked.On("GetByID", ctx, entityID).
 			Return(vehicle, nil)
 
-		saleRepositoryMocked.On("GetByEntityID", ctx, entityID).
+		saleRepositoryMocked.On("SearchByEntityID", ctx, entityID).
 			Return(nil, nil)
 
 		vehiclePlatformPaymentsAdapterMocked.On("GeneratePayment", ctx, vehicle.Price).

@@ -61,12 +61,14 @@ func (ref *vehicleService) Buy(ctx context.Context, entityID, buyerDocumentNumbe
 		return nil, nil
 	}
 
-	existingSale, err := ref.saleRepository.GetByEntityID(ctx, entityID)
+	sales, err := ref.saleRepository.SearchByEntityID(ctx, entityID)
 	if err != nil {
 		return nil, err
 	}
 
-	if existingSale != nil && existingSale.Status == "APPROVED" {
+	alreadySold := ref.vehicleAlreadySold(sales)
+
+	if alreadySold {
 		return nil, errors.New("vehicle already sold")
 	}
 
@@ -88,4 +90,18 @@ func (ref *vehicleService) Buy(ctx context.Context, entityID, buyerDocumentNumbe
 	}
 
 	return vehicle, nil
+}
+
+func (ref *vehicleService) vehicleAlreadySold(sales []entity.Sale) bool {
+	if len(sales) == 0 {
+		return false
+	}
+
+	for _, sale := range sales {
+		if sale.Status == "APPROVED" {
+			return true
+		}
+	}
+
+	return false
 }

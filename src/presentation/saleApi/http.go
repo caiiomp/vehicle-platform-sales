@@ -42,7 +42,7 @@ func (ref *saleApi) search(ctx *gin.Context) {
 		return
 	}
 
-	sales, err := ref.saleService.Search(ctx, query.Status)
+	sales, err := ref.saleService.SearchByStatus(ctx, query.Status)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, responses.ErrorResponse{
 			Error: err.Error(),

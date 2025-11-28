@@ -45,12 +45,12 @@ func (_m *SaleService) Create(ctx context.Context, sale entity.Sale) (*entity.Sa
 	return r0, r1
 }
 
-// Search provides a mock function with given fields: ctx, status
-func (_m *SaleService) Search(ctx context.Context, status string) ([]entity.Sale, error) {
+// SearchByStatus provides a mock function with given fields: ctx, status
+func (_m *SaleService) SearchByStatus(ctx context.Context, status string) ([]entity.Sale, error) {
 	ret := _m.Called(ctx, status)
 
 	if len(ret) == 0 {
-		panic("no return value specified for Search")
+		panic("no return value specified for SearchByStatus")
 	}
 
 	var r0 []entity.Sale
