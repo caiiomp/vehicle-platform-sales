@@ -109,6 +109,7 @@ func (ref *vehicleApi) search(ctx *gin.Context) {
 // @Tags Vehicle
 // @Accept json
 // @Produce json
+// @Param entity_id path string true "Entity ID"
 // @Success 200 {object} responses.Vehicle
 // @Failure 400 {object} responses.ErrorResponse
 // @Failure 404 {object} responses.ErrorResponse
@@ -148,6 +149,7 @@ func (ref *vehicleApi) get(ctx *gin.Context) {
 // @Tags Vehicle
 // @Accept json
 // @Produce json
+// @Param entity_id path string true "Entity ID"
 // @Param vehicle body vehicleApi.updateVehicleRequest false "Body"
 // @Success 200 {object} responses.Vehicle
 // @Failure 400 {object} responses.ErrorResponse
@@ -196,6 +198,7 @@ func (ref *vehicleApi) update(ctx *gin.Context) {
 // @Tags Vehicle
 // @Accept json
 // @Produce json
+// @Param entity_id path string true "Entity ID"
 // @Param buyer_document_number body vehicleApi.buyVehicleRequest true "Body"
 // @Success 200 {object} responses.Vehicle
 // @Failure 400 {object} responses.ErrorResponse

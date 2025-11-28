@@ -71,7 +71,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Body",
-                        "name": "user",
+                        "name": "expected_webhook",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -85,6 +85,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/responses.ErrorResponse"
                         }
@@ -207,6 +213,15 @@ const docTemplate = `{
                     "Vehicle"
                 ],
                 "summary": "Get Vehicle",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Entity ID",
+                        "name": "entity_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -247,6 +262,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update Vehicle",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Entity ID",
+                        "name": "entity_id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "Body",
                         "name": "vehicle",
@@ -298,6 +320,13 @@ const docTemplate = `{
                 ],
                 "summary": "Buy Vehicle",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Entity ID",
+                        "name": "entity_id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "Body",
                         "name": "buyer_document_number",
