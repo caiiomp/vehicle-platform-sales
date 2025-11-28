@@ -13,6 +13,7 @@ import (
 
 	mocks "github.com/caiiomp/vehicle-platform-sales/src/core/_mocks"
 	"github.com/caiiomp/vehicle-platform-sales/src/core/domain/entity"
+	valueobjects "github.com/caiiomp/vehicle-platform-sales/src/core/domain/valueObjects"
 )
 
 func TestCreate(t *testing.T) {
@@ -115,7 +116,7 @@ func TestUpdateStatusByPaymentID(t *testing.T) {
 	vehicleID := uuid.NewString()
 	paymentID := uuid.NewString()
 	buyerDocumentNumber := uuid.NewString()
-	status := "APPROVED"
+	status := valueobjects.SaleStatusTypeApproved
 	soldAt := time.Now()
 
 	sale := entity.Sale{
@@ -130,14 +131,14 @@ func TestUpdateStatusByPaymentID(t *testing.T) {
 
 	saleRepositoryMocked := mocks.NewSaleRepository(t)
 
-	saleRepositoryMocked.On("UpdateStatusByPaymentID", ctx, paymentID, status, mock.AnythingOfType("time.Time")).
+	saleRepositoryMocked.On("UpdateStatusByPaymentID", ctx, paymentID, status.String(), mock.AnythingOfType("time.Time")).
 		Return(&sale, nil)
 
 	service := NewSaleService(saleRepositoryMocked, time.Now)
 
 	expected := sale
 
-	actual, err := service.UpdateStatusByPaymentID(ctx, paymentID, status)
+	actual, err := service.UpdateStatusByPaymentID(ctx, paymentID, status.String())
 
 	assert.Equal(t, &expected, actual)
 	assert.Nil(t, err)

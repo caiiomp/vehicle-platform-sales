@@ -22,7 +22,7 @@ func SaleFromDomain(sale entity.Sale) Sale {
 		VehicleID:           sale.EntityID,
 		PaymentID:           sale.PaymentID,
 		BuyerDocumentNumber: sale.BuyerDocumentNumber,
-		Status:              sale.Status,
+		Status:              sale.Status.String(),
 		Price:               sale.Price,
 		SoldAt:              sale.SoldAt,
 	}

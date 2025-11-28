@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/caiiomp/vehicle-platform-sales/src/core/domain/entity"
+	valueobjects "github.com/caiiomp/vehicle-platform-sales/src/core/domain/valueObjects"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -22,7 +23,7 @@ func TestSaleFromDomain(t *testing.T) {
 		PaymentID:           paymentID,
 		BuyerDocumentNumber: buyerDocumentNumber,
 		Price:               price,
-		Status:              status,
+		Status:              valueobjects.SaleStatusType(status),
 		SoldAt:              &now,
 	}
 
@@ -46,7 +47,7 @@ func TestSaleToDomain(t *testing.T) {
 	paymentID := uuid.NewString()
 	buyerDocumentNumber := uuid.NewString()
 	price := float64(95000)
-	status := "APPROVED"
+	status := valueobjects.SaleStatusTypeApproved
 	now := time.Now()
 	yesterday := time.Now().Add(time.Hour * -24)
 
@@ -56,7 +57,7 @@ func TestSaleToDomain(t *testing.T) {
 		PaymentID:           paymentID,
 		BuyerDocumentNumber: buyerDocumentNumber,
 		Price:               price,
-		Status:              status,
+		Status:              status.String(),
 		SoldAt:              &now,
 		CreatedAt:           yesterday,
 		UpdatedAt:           yesterday,

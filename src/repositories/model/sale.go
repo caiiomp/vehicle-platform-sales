@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/caiiomp/vehicle-platform-sales/src/core/domain/entity"
+	valueobjects "github.com/caiiomp/vehicle-platform-sales/src/core/domain/valueObjects"
 )
 
 type Sale struct {
@@ -24,7 +25,7 @@ func SaleFromDomain(sale entity.Sale) Sale {
 		PaymentID:           sale.PaymentID,
 		BuyerDocumentNumber: sale.BuyerDocumentNumber,
 		Price:               sale.Price,
-		Status:              sale.Status,
+		Status:              sale.Status.String(),
 		SoldAt:              sale.SoldAt,
 	}
 }
@@ -36,7 +37,7 @@ func (ref *Sale) ToDomain() *entity.Sale {
 		PaymentID:           ref.PaymentID,
 		BuyerDocumentNumber: ref.BuyerDocumentNumber,
 		Price:               ref.Price,
-		Status:              ref.Status,
+		Status:              valueobjects.SaleStatusType(ref.Status),
 		SoldAt:              ref.SoldAt,
 		CreatedAt:           ref.CreatedAt,
 		UpdatedAt:           ref.UpdatedAt,
