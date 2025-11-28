@@ -52,19 +52,8 @@ func (ref *saleRepository) GetByEntityID(ctx context.Context, entityID string) (
 	return sale.ToDomain(), nil
 }
 
-func (ref *saleRepository) Search(ctx context.Context, status string) ([]entity.Sale, error) {
-	var (
-		rows *sql.Rows
-		err  error
-	)
-
-	switch {
-	case status != "":
-		rows, err = ref.db.QueryContext(ctx, searchSalesByStatus, status)
-	default:
-		rows, err = ref.db.QueryContext(ctx, searchAllSales)
-	}
-
+func (ref *saleRepository) Search(ctx context.Context) ([]entity.Sale, error) {
+	rows, err := ref.db.QueryContext(ctx, searchSalesByStatus)
 	if err != nil {
 		return nil, err
 	}

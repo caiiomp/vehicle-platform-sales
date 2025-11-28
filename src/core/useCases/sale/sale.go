@@ -24,8 +24,8 @@ func (ref *saleService) Create(ctx context.Context, sale entity.Sale) (*entity.S
 	return ref.saleRepository.Create(ctx, sale)
 }
 
-func (ref *saleService) Search(ctx context.Context, status string) ([]entity.Sale, error) {
-	return ref.saleRepository.Search(ctx, status)
+func (ref *saleService) Search(ctx context.Context) ([]entity.Sale, error) {
+	return ref.saleRepository.Search(ctx)
 }
 
 func (ref *saleService) UpdateStatusByPaymentID(ctx context.Context, paymentID string, status string) (*entity.Sale, error) {

@@ -99,11 +99,6 @@ paths:
       consumes:
       - application/json
       description: List sales
-      parameters:
-      - description: Filter sales by status
-        in: query
-        name: status
-        type: string
       produces:
       - application/json
       responses:

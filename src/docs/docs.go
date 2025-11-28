@@ -28,14 +28,6 @@ const docTemplate = `{
                     "Sale"
                 ],
                 "summary": "List sales",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Filter sales by status",
-                        "name": "status",
-                        "in": "query"
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
